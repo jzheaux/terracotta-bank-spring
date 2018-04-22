@@ -1,0 +1,30 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="testng" verbose="1">
+	<test name="tomcat">
+		<groups>
+			<run>
+				<include name="web" />
+				<include name="log" />
+				<include name="http" />
+				<include name="data" />
+			</run>
+		</groups>
+		
+		<packages>
+      		<package name=".*" />
+  		</packages>
+	</test>
+
+	<test name="docker">
+		<groups>
+			<run>
+				<include name="filesystem" />
+			</run>
+		</groups>
+		
+		<packages>
+      		<package name=".*" />
+  		</packages>
+	</test>
+</suite>
