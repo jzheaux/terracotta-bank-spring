@@ -42,7 +42,6 @@ import com.joshcummings.codeplay.terracotta.service.passwords.WeakPasswordEntrop
  *
  * @author Josh Cummings
  */
-//@WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -87,13 +86,12 @@ public class RegisterServlet extends HttpServlet {
 			this.userService.addUser(user);
 			this.accountService.addAccount(account);
 
-			request.getSession().setAttribute("authenticatedUser", user);
-			request.getSession().setAttribute("authenticatedAccount", account);
-			response.sendRedirect(request.getContextPath() + "/index.jsp");
+			request.setAttribute("registrationErrorMessage", "You should receive instructions by email soon.");
+			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
 		}
 		catch ( IllegalArgumentException e )
 		{
-			request.setAttribute("registrationErrorMessage", "That username is already taken");
+			request.setAttribute("registrationErrorMessage", "You should receive instructions by email soon.");
 			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
 		}
 	}

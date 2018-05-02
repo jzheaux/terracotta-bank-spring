@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -89,6 +90,15 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 
 		findElementEventually(driver, By.id("deposit"), 2000);
 		Assert.fail("Successful login with SQLi!");
+	}
+
+	@Test(groups="enumeration")
+	public void testLoginForEnumerationCherryPick() throws Exception {
+		Map<String, String> responsesByUsername = new HashMap<>();
+		responsesByUsername.put(attemptLogin("josh.cummings").getKey(), "josh.cummings");
+		responsesByUsername.put(attemptLogin("wrongusername").getKey(), "wrongusername");
+
+		Assert.assertEquals(responsesByUsername.size(), 1, "Potential enumeration vulnerability");
 	}
 
 	@Test(groups="enumeration")
