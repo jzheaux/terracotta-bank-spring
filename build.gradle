@@ -42,6 +42,7 @@ dependencies {
 	compile('javax.mail:mail:1.4')
 	compile('javax.servlet:jstl')
 	compile('org.apache.tomcat.embed:tomcat-embed-jasper')
+	compile('org.mindrot:jbcrypt:0.4')
 
 	testCompile('org.springframework:spring-beans')
 	testCompile('org.springframework:spring-context')
@@ -53,6 +54,7 @@ dependencies {
 	testCompile('io.github.bonigarcia:webdrivermanager:2.2.1')
 	testCompile('org.littleshoot:littleproxy:1.1.3-SNAPSHOT')
  	testCompile('org.mockito:mockito-core')
+	testCompile('org.mockito:mockito-core')
 	testCompile('org.seleniumhq.selenium:selenium-java')
 	testCompile('org.testng:testng:6.14.3')
 

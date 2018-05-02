@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,17 +66,19 @@ public class EnumerationTester {
 
 		Set<String> usernamesToTest = new HashSet<>();
 
-		Set<String> firstNames =
-				readAllLines("first-names.csv")
-						.flatMap((firstName) -> Stream.of(firstName.split(",")))
-						.collect(Collectors.toSet());
+		// on this branch, the app is equipped with BCrypt, which makes this test not viable
+		// demonstration unless we really narrow the search space. So, we'll just keep it to
+		// one very lucky "guess" of a first name. :)
+
+		Set<String> firstNames = new HashSet<>(Arrays.asList("Josh"));
 
 		firstNames.stream()
 				.forEach((firstName) -> {
 							readAllLines("last-names.csv")
 									.forEach((lastName) -> {
-										usernamesToTest.add(firstName.toLowerCase());
-										usernamesToTest.add(firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase());
+
+										// same comment as above for the username pattern
+
 										usernamesToTest.add(firstName.toLowerCase() + "." + lastName.toLowerCase());
 									});
 						}
