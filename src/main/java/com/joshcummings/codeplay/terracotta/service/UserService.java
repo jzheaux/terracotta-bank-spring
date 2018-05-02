@@ -16,10 +16,12 @@
 package com.joshcummings.codeplay.terracotta.service;
 
 import com.joshcummings.codeplay.terracotta.model.User;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * This class makes Terracotta Bank vulnerable to SQL injection
@@ -48,16 +50,21 @@ public class UserService extends ServiceSupport {
 		return users.isEmpty() ? null : users.iterator().next();
 	}
 
-	public User findByUsernameAndPassword(String username, String password) {
-		Set<User> users = runQuery("SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'",
+	private transient byte[] random = BCrypt.hashpw(UUID.randomUUID().toString(), BCrypt.gensalt()).getBytes();
+
+	public boolean findByUsernameAndPassword(String username, String password) {
+		Set<String> users = runQuery("SELECT password FROM users WHERE username = '" + username + "'",
 				(rs) -> {
 					try {
-						return new User(rs.getString(1), rs.getString(4), rs.getString(5), rs.getString(2), rs.getString(3));
+						return rs.getString(1);
 					} catch ( SQLException e ) {
 						throw new IllegalStateException(e);
 					}
 				});
-		return users.isEmpty() ? null : users.iterator().next();
+
+		return BCrypt.checkpw(password, users.isEmpty() ?
+				new String(random) :
+				users.iterator().next()) && !users.isEmpty();
 	}
 
 	public Integer count() {

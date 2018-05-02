@@ -38,9 +38,6 @@ import java.util.Set;
  * It is vulnerable to Open-Redirect and to CRLF due to not validating
  * and encoding the {@code relay} parameter.
  *
- * It is vulnerable to Enumeration due to the response time
- * being different between successful and unsuccessful user lookups.
- *
  * It is vulnerable to CSRF due to it naively calling {@code doPost}
  * in its {@code doGet} method.
  *
@@ -64,20 +61,16 @@ public class LoginServlet extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 
-		User user = this.userService.findByUsername(username);
+		boolean matches = this.userService.findByUsernameAndPassword(username, password);
 
-		if ( user == null )
-		{
-			String error = "The username or password you provided is incorrect.";
-			this.error(request, response, error);
-		}
-		else if ( !BCrypt.checkpw(password, user.getPassword()) )
+		if ( !matches )
 		{
 			String error = "The username or password you provided is incorrect.";
 			this.error(request, response, error);
 		}
 		else
 		{
+			User user = this.userService.findByUsername(username);
 			Set<Account> accounts = this.accountService.findByUsername(user.getUsername());
 
 			request.getSession().setAttribute("authenticatedUser", user);
