@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Measurement(iterations = 20)
-public class RegistrationBenchmark {
+public class LoginEnumerationBenchmark {
 	static HttpSupport http = new HttpSupport();
 
 	@Param({ "admin", "admidpifns" }) String username;
@@ -74,7 +74,7 @@ public class RegistrationBenchmark {
 	@Test
 	public void runBenchmark() throws RunnerException {
 		Options opt = new OptionsBuilder()
-			.include(RegistrationBenchmark.class.getCanonicalName())
+			.include(LoginEnumerationBenchmark.class.getCanonicalName())
 			.jvmArgs("-Xmx512M")
 			.forks(1)
 			.build();
@@ -91,15 +91,15 @@ public class RegistrationBenchmark {
 
 		double scoreForExistingUsername =
 			scoresByBenchmarkParam
-				.get(RegistrationBenchmark.class.getCanonicalName() + ".attemptLogin:admin") -
+				.get(LoginEnumerationBenchmark.class.getCanonicalName() + ".attemptLogin:admin") -
 			scoresByBenchmarkParam
-				.get(RegistrationBenchmark.class.getCanonicalName() + ".baseline:admin");
+				.get(LoginEnumerationBenchmark.class.getCanonicalName() + ".baseline:admin");
 
 		double scoreForFakeUsername =
 			scoresByBenchmarkParam
-				.get(RegistrationBenchmark.class.getCanonicalName() + ".attemptLogin:admidpifns") -
+				.get(LoginEnumerationBenchmark.class.getCanonicalName() + ".attemptLogin:admidpifns") -
 				scoresByBenchmarkParam
-					.get(RegistrationBenchmark.class.getCanonicalName() + ".baseline:admidpifns");
+					.get(LoginEnumerationBenchmark.class.getCanonicalName() + ".baseline:admidpifns");
 
 
 		Assert.assertTrue(Math.abs(1 - scoreForFakeUsername / scoreForExistingUsername) < .2);
