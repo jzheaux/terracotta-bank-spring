@@ -44,7 +44,18 @@ public abstract class ServiceSupport {
 		}
 		return results;
 	}
-	
+
+	public Integer count(String tableName) {
+		return runQuery("SELECT count(*) FROM " + tableName,
+				(rs) -> {
+					try {
+						return rs.getInt(1);
+					} catch ( SQLException e ) {
+						throw new IllegalStateException(e);
+					}
+				}).iterator().next();
+	}
+
 	public void runUpdate(String query) {
 		try ( Connection conn = DriverManager.getConnection(DATABASE_URL, "user", "password");
 				PreparedStatement ps = conn.prepareStatement(query); ){

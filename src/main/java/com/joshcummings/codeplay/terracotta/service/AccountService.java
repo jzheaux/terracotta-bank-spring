@@ -92,6 +92,10 @@ public class AccountService extends ServiceSupport {
 		
 		return accounts.size() > 0 ? accounts.iterator().next() : null;		
 	}
+
+	public Integer count() {
+		return super.count("accounts");
+	}
 	
 	public void addAccount(Account account) {
 		runUpdate("INSERT INTO accounts (id, amount, number, owner_id)"

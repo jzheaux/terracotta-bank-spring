@@ -59,4 +59,8 @@ public class UserService extends ServiceSupport {
 				});
 		return users.isEmpty() ? null : users.iterator().next();
 	}
+
+	public Integer count() {
+		return super.count("users");
+	}
 }

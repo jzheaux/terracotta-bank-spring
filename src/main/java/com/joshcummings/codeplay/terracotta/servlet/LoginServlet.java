@@ -45,7 +45,6 @@ import java.util.Set;
  *
  * @author Josh Cummings
  */
-//@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 

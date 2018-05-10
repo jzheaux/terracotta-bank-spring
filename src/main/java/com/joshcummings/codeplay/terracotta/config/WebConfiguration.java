@@ -23,6 +23,7 @@ import com.joshcummings.codeplay.terracotta.service.EmailService;
 import com.joshcummings.codeplay.terracotta.service.MessageService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 import com.joshcummings.codeplay.terracotta.servlet.AccountServlet;
+import com.joshcummings.codeplay.terracotta.servlet.AdminLoginServlet;
 import com.joshcummings.codeplay.terracotta.servlet.CheckLookupServlet;
 import com.joshcummings.codeplay.terracotta.servlet.ContactUsServlet;
 import com.joshcummings.codeplay.terracotta.servlet.EmployeeLoginServlet;
@@ -32,6 +33,7 @@ import com.joshcummings.codeplay.terracotta.servlet.MakeDepositServlet;
 import com.joshcummings.codeplay.terracotta.servlet.MessagesServlet;
 import com.joshcummings.codeplay.terracotta.servlet.RegisterServlet;
 import com.joshcummings.codeplay.terracotta.servlet.SendResponseServlet;
+import com.joshcummings.codeplay.terracotta.servlet.SiteStatisticsServlet;
 import com.joshcummings.codeplay.terracotta.servlet.TransferMoneyServlet;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -68,6 +70,10 @@ public class WebConfiguration implements WebMvcConfigurer {
 		return this.servlet(new AccountServlet(accountService), "/showAccounts");
 	}
 
+	@Bean
+	public ServletRegistrationBean adminLoginServlet(AccountService accountService, UserService userService) {
+		return this.servlet(new AdminLoginServlet(), "/adminLogin");
+	}
 	@Bean
 	public ServletRegistrationBean checkLookupServlet(CheckService checkService) {
 		return this.servlet(new CheckLookupServlet(checkService), "/checkLookup");
@@ -119,6 +125,11 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Bean
 	public ServletRegistrationBean sendResponseServlet(EmailService emailService) {
 		return this.servlet(new SendResponseServlet(emailService), "/sendResponse");
+	}
+
+	@Bean
+	public ServletRegistrationBean siteStatisticsServlet(AccountService accountService, UserService userService) {
+		return this.servlet(new SiteStatisticsServlet(accountService, userService), "/siteStatistics");
 	}
 
 	@Bean
