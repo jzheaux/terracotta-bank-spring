@@ -136,6 +136,33 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 		Assert.assertEquals(1, usernamesByResponseType.size(), "Potential enumeration vulnerability, these appear to be legit usernames " + usernamesByResponseType.get("password"));
 	}
 
+	@Test(groups="bruteforce")
+	public void testLoginForSingleAccountBruteForce() throws Exception {
+		Assert.assertFalse(detectBruteForce("admin"));
+		Assert.assertFalse(detectBruteForce("admin"));
+		Assert.assertFalse(detectBruteForce("admin"));
+		Assert.assertFalse(detectBruteForce("admin"));
+		Assert.assertTrue(detectBruteForce("admin"));
+		Assert.assertTrue(detectBruteForce("admin"));
+		Assert.assertTrue(detectBruteForce("admin"));
+		Assert.assertTrue(detectBruteForce("admin"));
+		Assert.assertTrue(detectBruteForce("admin"));
+	}
+
+	@Test(groups="bruteforce")
+	public void testLoginForCrossAccountBruteForce() throws Exception {
+		Assert.assertFalse(detectBruteForce("admin"));
+		Assert.assertFalse(detectBruteForce("josh.cummings"));
+		Assert.assertFalse(detectBruteForce("john.coltrane"));
+		Assert.assertFalse(detectBruteForce("admin"));
+		Assert.assertFalse(detectBruteForce("josh.cummings"));
+		Assert.assertFalse(detectBruteForce("john.coltrane"));
+		Assert.assertFalse(detectBruteForce("admin"));
+		Assert.assertFalse(detectBruteForce("josh.cummings"));
+		Assert.assertFalse(detectBruteForce("john.coltrane"));
+		Assert.assertTrue(detectBruteForce("admin"));
+	}
+
 	private Map.Entry<String, String> attemptLogin(String username) {
 		try (
 			CloseableHttpResponse response =
@@ -146,11 +173,22 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 			String str = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 			boolean passwordFailed = str.contains("The password");
 
-			System.out.println("Attempted username (" + username + ")");
-
 			return new AbstractMap.SimpleImmutableEntry<>(passwordFailed ? "password" : "username", username);
 		} catch ( IOException e ) {
 			throw new IllegalStateException(e);
+		}
+	}
+
+	private boolean detectBruteForce(String username) throws Exception {
+		try (
+				CloseableHttpResponse response =
+						http.post("/login",
+								new BasicNameValuePair("username", username),
+								new BasicNameValuePair("password", "wrongpassword"));
+		) {
+			String asString = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+
+			return asString.contains("This account has been temporarily locked");
 		}
 	}
 
