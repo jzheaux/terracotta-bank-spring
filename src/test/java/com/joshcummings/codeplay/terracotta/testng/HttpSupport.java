@@ -16,21 +16,19 @@
 package com.joshcummings.codeplay.terracotta.testng;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.testng.Assert;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+import static org.apache.http.client.methods.RequestBuilder.get;
 
 public class HttpSupport {
 	protected CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -54,24 +52,46 @@ public class HttpSupport {
 	}
 
 	public CloseableHttpResponse post(String path, BasicNameValuePair... body) throws IOException {
+		return post(RequestBuilder.post(path).addParameters(body));
+	}
+
+	public CloseableHttpResponse post(RequestBuilder post) throws IOException {
 		try ( CloseableHttpResponse csrf = getForEntity("/csrf.jsp") ) {
 			String token = csrf.getStatusLine().getStatusCode() == 200 ?
 					new String(IOUtils.toByteArray(csrf.getEntity().getContent())) : null;
-			
-			HttpPost post = new HttpPost("http://" + host + path);
+
+			post.setUri("http://" + host + post.getUri());
 			post.setConfig(config);
-			List<NameValuePair> nvps = new ArrayList<>(Arrays.asList(body));
-			nvps.add(new BasicNameValuePair("csrfToken", token));
-			post.setEntity(new UrlEncodedFormEntity(nvps));
-			CloseableHttpResponse response = httpclient.execute(post);
+			post.addParameter("csrfToken", token);
+
+			CloseableHttpResponse response = httpclient.execute(post.build());
 			return response;
 		}
 	}
 	
 	public CloseableHttpResponse getForEntity(String path) throws IOException {
-		HttpGet get = new HttpGet("http://" + host + path);
+		return getForEntity(RequestBuilder.get(path));
+	}
+
+	public CloseableHttpResponse getForEntity(RequestBuilder get) throws IOException {
+		get.setUri("http://" + host + get.getUri());
 		get.setConfig(config);
-		CloseableHttpResponse response = httpclient.execute(get);
-		return response;
+		return httpclient.execute(get.build());
+	}
+
+	public String session() throws IOException {
+		try (CloseableHttpResponse response = getForEntity(get("/"))) {
+
+			Header[] cookies = response.getHeaders("Set-Cookie");
+
+			for ( Header cookie : cookies ) {
+				if ( cookie.getValue().startsWith("JSESSIONID") ) {
+					return cookie.getValue();
+				}
+			}
+
+		}
+
+		return null;
 	}
 }
