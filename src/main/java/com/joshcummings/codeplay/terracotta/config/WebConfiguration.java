@@ -37,6 +37,7 @@ import com.joshcummings.codeplay.terracotta.servlet.RegisterServlet;
 import com.joshcummings.codeplay.terracotta.servlet.SendResponseServlet;
 import com.joshcummings.codeplay.terracotta.servlet.SiteStatisticsServlet;
 import com.joshcummings.codeplay.terracotta.servlet.TransferMoneyServlet;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -73,8 +74,11 @@ public class WebConfiguration implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public ServletRegistrationBean adminLoginServlet(AccountService accountService, UserService userService) {
-		return this.servlet(new AdminLoginServlet(), "/adminLogin");
+	public ServletRegistrationBean adminLoginServlet(
+			@Value("${system.username}") String username,
+			@Value("${system.passwordHash}") String hash) {
+
+		return this.servlet(new AdminLoginServlet(username, hash), "/adminLogin");
 	}
 
 	@Bean
