@@ -56,15 +56,19 @@ public abstract class ServiceSupport {
 				}).iterator().next();
 	}
 
-	public void runUpdate(String query) {
+	public int runUpdate(String query) {
+		return runUpdate(query, ps -> ps);
+	}
+
+	public int runUpdate(String query, Preparer preparer) {
 		try ( Connection conn = DriverManager.getConnection(DATABASE_URL, "user", "password");
-				PreparedStatement ps = conn.prepareStatement(query); ){
-			ps.executeUpdate();
+			  PreparedStatement ps = conn.prepareStatement(query) ) {
+			return preparer.prepare(ps).executeUpdate();
 		} catch ( SQLException e ) {
 			throw new IllegalArgumentException(e);
 		}
 	}
-	
+
 	@FunctionalInterface
 	public interface Preparer {
 		PreparedStatement prepare(PreparedStatement ps) throws SQLException;
