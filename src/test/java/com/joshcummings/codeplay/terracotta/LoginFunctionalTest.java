@@ -19,6 +19,7 @@ import com.joshcummings.codeplay.terracotta.testng.TestConstants;
 import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -45,6 +46,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.apache.http.client.methods.RequestBuilder.post;
 
 public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	@AfterMethod(alwaysRun=true)
@@ -163,33 +166,49 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 		Assert.assertTrue(detectBruteForce("admin"));
 	}
 
-	private Map.Entry<String, String> attemptLogin(String username) {
-		try (
-			CloseableHttpResponse response =
-				http.post("/login",
-					new BasicNameValuePair("username", username),
-					new BasicNameValuePair("password", "oi12bu34ci 123h 4dp2i3h4 234jn"));
-		) {
-			String str = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
-			boolean passwordFailed = str.contains("The password");
+	@Test(groups="bruteforce")
+	public void testLoginForTwoFactorBackdoor() {
+		String content =
+				http.postForContent(
+						post("/login")
+								.addParameter("username", "needstwofactor")
+								.addParameter("password", "notagreatpasswordbutbetterthanthecompetition")
+								.addParameter("code", "123456"));
 
-			return new AbstractMap.SimpleImmutableEntry<>(passwordFailed ? "password" : "username", username);
-		} catch ( IOException e ) {
-			throw new IllegalStateException(e);
-		}
+		Assert.assertTrue(content.contains("Something about your login information was incorrect."));
+	}
+
+	@Test(groups="bruteforce")
+	public void testLoginForTwoFactorBruteForce() {
+		String content =
+				http.postForContent(
+					post("/login")
+						.addParameter("username", "needstwofactor")
+						.addParameter("password", "notagreatpasswordbutbetterthanthecompetition"));
+
+		// even though the username and password were correct, this account requires a second factor, too.
+
+		Assert.assertTrue(content.contains("Something about your login information was incorrect."));
+	}
+
+	private Map.Entry<String, String> attemptLogin(String username) {
+		String content = http.postForContent(
+				post("/login")
+						.addParameter("username", username)
+						.addParameter("password", "oi12bu34ci 123h 4dp2i3h4 234jn"));
+
+		boolean passwordFailed = content.contains("The password");
+
+		return new AbstractMap.SimpleImmutableEntry<>(passwordFailed ? "password" : "username", username);
 	}
 
 	private boolean detectBruteForce(String username) throws Exception {
-		try (
-				CloseableHttpResponse response =
-						http.post("/login",
-								new BasicNameValuePair("username", username),
-								new BasicNameValuePair("password", "wrongpassword"));
-		) {
-			String asString = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+		String content = http.postForContent(
+				post("/login")
+						.addParameter("username", username)
+						.addParameter("password", "wrongpassword"));
 
-			return asString.contains("This account has been temporarily locked");
-		}
+		return content.contains("This account has been temporarily locked");
 	}
 
 	private Stream<String> readAllLines(String filename) {

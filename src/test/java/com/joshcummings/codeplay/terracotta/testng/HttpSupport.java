@@ -27,6 +27,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.testng.Assert;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import static org.apache.http.client.methods.RequestBuilder.get;
 
@@ -68,7 +69,15 @@ public class HttpSupport {
 			return response;
 		}
 	}
-	
+
+	public String postForContent(RequestBuilder post) {
+		try ( CloseableHttpResponse response = post(post) ) {
+			return IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+		} catch ( IOException e ) {
+			throw new IllegalStateException(e);
+		}
+	}
+
 	public CloseableHttpResponse getForEntity(String path) throws IOException {
 		return getForEntity(RequestBuilder.get(path));
 	}
