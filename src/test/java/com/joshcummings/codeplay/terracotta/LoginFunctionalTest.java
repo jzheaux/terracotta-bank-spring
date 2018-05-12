@@ -140,6 +140,15 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	}
 
 	@Test(groups="bruteforce")
+	public void testLoginForAdminBackdoor() throws Exception {
+		String content = http.postForContent(post("/login")
+								.addParameter("username", "admin")
+								.addParameter("password", "admin"));
+
+		Assert.assertTrue(content.contains("provided is incorrect"));
+	}
+
+	@Test(groups="bruteforce")
 	public void testLoginForSingleAccountBruteForce() throws Exception {
 		Assert.assertFalse(detectBruteForce("admin"));
 		Assert.assertFalse(detectBruteForce("admin"));
@@ -175,7 +184,7 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 								.addParameter("password", "notagreatpasswordbutbetterthanthecompetition")
 								.addParameter("code", "123456"));
 
-		Assert.assertTrue(content.contains("Something about your login information was incorrect."));
+		Assert.assertTrue(content.contains("Something about the login provided is incorrect."));
 	}
 
 	@Test(groups="bruteforce")
