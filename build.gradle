@@ -43,7 +43,8 @@ dependencies {
 	compile('javax.servlet:jstl')
 	compile('org.apache.tomcat.embed:tomcat-embed-jasper')
 	compile('org.mindrot:jbcrypt:0.4')
-        compile('com.j256.two-factor-auth:two-factor-auth:1.0')
+	compile('com.j256.two-factor-auth:two-factor-auth:1.0')
+	compile('com.google.guava:guava:25.0-jre')
 
 	testCompile('org.springframework:spring-beans')
 	testCompile('org.springframework:spring-context')
