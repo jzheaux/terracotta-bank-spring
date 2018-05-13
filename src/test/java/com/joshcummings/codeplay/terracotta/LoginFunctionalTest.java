@@ -154,7 +154,7 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 		Assert.assertFalse(detectBruteForce("admin"));
 		Assert.assertFalse(detectBruteForce("admin"));
 		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertTrue(detectBruteForce("admin"));
+		Assert.assertFalse(detectBruteForce("admin"));
 		Assert.assertTrue(detectBruteForce("admin"));
 		Assert.assertTrue(detectBruteForce("admin"));
 		Assert.assertTrue(detectBruteForce("admin"));
@@ -162,17 +162,25 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	}
 
 	@Test(groups="bruteforce")
+	public void testLoginForSingleAccountBruteForceAndEnumeration() throws Exception {
+		Assert.assertFalse(detectBruteForce("unknown.user"));
+		Assert.assertFalse(detectBruteForce("unknown.user"));
+		Assert.assertFalse(detectBruteForce("unknown.user"));
+		Assert.assertFalse(detectBruteForce("unknown.user"));
+		Assert.assertFalse(detectBruteForce("unknown.user"));
+		Assert.assertTrue(detectBruteForce("unknown.user"));
+		Assert.assertTrue(detectBruteForce("unknown.user"));
+		Assert.assertTrue(detectBruteForce("unknown.user"));
+		Assert.assertTrue(detectBruteForce("unknown.user"));
+	}
+
+	@Test(groups="bruteforce")
 	public void testLoginForCrossAccountBruteForce() throws Exception {
-		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertFalse(detectBruteForce("josh.cummings"));
-		Assert.assertFalse(detectBruteForce("john.coltrane"));
-		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertFalse(detectBruteForce("josh.cummings"));
-		Assert.assertFalse(detectBruteForce("john.coltrane"));
-		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertFalse(detectBruteForce("josh.cummings"));
-		Assert.assertFalse(detectBruteForce("john.coltrane"));
-		Assert.assertTrue(detectBruteForce("admin"));
+		for ( int i = 0; i < 25; i++ ) {
+			Assert.assertFalse(detectBruteForce("username" + i));
+		}
+
+		Assert.assertTrue(detectBruteForce("some.other.username"));
 	}
 
 	@Test(groups="bruteforce")
