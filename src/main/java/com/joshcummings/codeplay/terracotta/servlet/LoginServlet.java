@@ -20,6 +20,7 @@ import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.network.IpAddressResolver;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
 import com.joshcummings.codeplay.terracotta.service.LockoutDecisionManager;
+import com.joshcummings.codeplay.terracotta.service.TotpChecker;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 
 import javax.servlet.ServletException;
@@ -27,7 +28,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * This class makes Terracotta Bank vulnerable to Cross-site Scripting,
@@ -55,6 +59,7 @@ public class LoginServlet extends HttpServlet {
 	private final IpAddressResolver ipAddressResolver;
 
 	private final LockoutDecisionManager lockoutDecisionManager = new LockoutDecisionManager();
+	private final TotpChecker totpChecker = new TotpChecker();
 
 	public LoginServlet(AccountService accountService, UserService userService, IpAddressResolver ipAddressResolver) {
 		this.accountService = accountService;
@@ -68,6 +73,7 @@ public class LoginServlet extends HttpServlet {
 
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
+		int code = tryParse(request.getParameter("code"), Integer::parseInt, 0);
 
 		String ipAddress = ipAddressResolver.ipAddress(request);
 
@@ -77,10 +83,10 @@ public class LoginServlet extends HttpServlet {
 		} else {
 			User user = this.userService.findByUsernameAndPassword(username, password);
 
-			if (user == null) {
+			if (!this.totpChecker.check(user, code) || user == null) {
 				this.lockoutDecisionManager.failedLogin(username, ipAddress);
 
-				String error = "The username (" + username + ") or password you provided is incorrect.";
+				String error = "Something about the login provided is incorrect.";
 				this.error(request, response, error);
 			} else {
 				this.lockoutDecisionManager.successfulLogin(username, ipAddress);
@@ -114,5 +120,13 @@ public class LoginServlet extends HttpServlet {
 
 		request.setAttribute("loginErrorMessage", error);
 		request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
+	}
+
+	private <E> E tryParse(String possibleInteger, Function<String, E> parser, E defaultValue) {
+		try {
+			return parser.apply(possibleInteger);
+		} catch ( Exception e ) {
+			return defaultValue;
+		}
 	}
 }

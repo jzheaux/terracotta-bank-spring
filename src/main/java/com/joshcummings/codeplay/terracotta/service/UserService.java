@@ -31,16 +31,24 @@ import java.util.Set;
 @Service
 public class UserService extends ServiceSupport {
 	public void addUser(User user) {
-		runUpdate("INSERT INTO users (id, username, password, name, email)"
-				+ " VALUES ('" + user.getId() + "','" + user.getUsername() + 
-				"','" + user.getPassword() + "','" + user.getName() + "','" + user.getEmail() + "')");
+		runUpdate("INSERT INTO users (id, username, password, name, email, totp_secret)"
+				+ " VALUES (?, ?, ?, ?, ?, ?)",
+				ps -> {
+					ps.setString(1, user.getId());
+					ps.setString(2, user.getUsername());
+					ps.setString(3, user.getPassword());
+					ps.setString(4, user.getName());
+					ps.setString(5, user.getEmail());
+					ps.setString(6, user.getTotpSecret());
+					return ps;
+				});
 	}
 
 	public User findByUsername(String username) {
 		Set<User> users = runQuery("SELECT * FROM users WHERE username = '" + username + "'",
 			(rs) -> {
 				try {
-					return new User(rs.getString(1), rs.getString(4), rs.getString(5), rs.getString(2), rs.getString(3));
+					return new User(rs.getString(1), rs.getString(4), rs.getString(5), rs.getString(2), rs.getString(3), rs.getString(7));
 				} catch ( SQLException e ) {
 					throw new IllegalStateException(e);
 				}
@@ -52,7 +60,7 @@ public class UserService extends ServiceSupport {
 		Set<User> users = runQuery("SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'",
 				(rs) -> {
 					try {
-						return new User(rs.getString(1), rs.getString(4), rs.getString(5), rs.getString(2), rs.getString(3));
+						return new User(rs.getString(1), rs.getString(4), rs.getString(5), rs.getString(2), rs.getString(3), rs.getString(7));
 					} catch ( SQLException e ) {
 						throw new IllegalStateException(e);
 					}

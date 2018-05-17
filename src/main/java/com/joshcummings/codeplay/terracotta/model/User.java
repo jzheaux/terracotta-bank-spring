@@ -31,13 +31,19 @@ public class User implements Serializable {
 	private final String password;
 	private final String name;
 	private final String email;
+	private final String totpSecret;
 	
 	public User(String id, String username, String password, String name, String email) {
+		this(id, username, password, name, email, null);
+	}
+
+	public User(String id, String username, String password, String name, String email, String totpSecret) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.name = name;
 		this.email = email;
+		this.totpSecret = totpSecret;
 	}
 
 	public String getId() {
@@ -58,5 +64,9 @@ public class User implements Serializable {
 
 	public String getEmail() {
 		return email;
+	}
+
+	public String getTotpSecret() {
+		return totpSecret;
 	}
 }

@@ -146,8 +146,11 @@ public class WebConfiguration implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public ServletRegistrationBean registerServlet(AccountService accountService, UserService userService) {
-		return this.servlet(new RegisterServlet(accountService, userService), "/register");
+	public ServletRegistrationBean registerServlet(AccountService accountService,
+													UserService userService,
+													EmailService emailService) {
+
+		return this.servlet(new RegisterServlet(accountService, userService, emailService), "/register");
 	}
 
 	@Bean

@@ -95,6 +95,9 @@ http://www.tooplate.com/view/2080-minimax
 							<div class="col-md-12 col-sm-12">
 								<input name="password" type="password" class="form-control" id="password" placeholder="Password">
 						  	</div>
+						  	<div class="col-md-12 col-sm-12">
+						  		<input name="code" class="form-control" id="code" placeholder="Authorization Code">
+						  	</div>
 						  	<input type="hidden" name="relay" value="${param['relay']}"/>
 						  	<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 							<div class="col-md-6 col-sm-6"></div>
@@ -122,7 +125,12 @@ http://www.tooplate.com/view/2080-minimax
 								<input name="registerEmail" type="email" class="form-control" id="registerEmail" placeholder="Your Email">
 						  	</div>
 						  	<input type="hidden" name="csrfToken" value="${csrfToken}"/>
-						  	<div class="col-md-6 col-sm-6"></div>
+						  	<div class="col-md-6 col-sm-6 checkbox">
+						  	    <label>
+						  	        <input name="useSecondFactor" type="checkbox" id="useSecondFactor"/>
+						  	        Enable Two-Factor Auth
+						  	    </label>
+						  	</div>
 							<div class="col-md-6 col-sm-6">
 								<input name="register" type="submit" class="form-control" value="REGISTER">
 							</div>

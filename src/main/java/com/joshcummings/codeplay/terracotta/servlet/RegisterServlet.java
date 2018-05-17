@@ -26,10 +26,14 @@ import javax.servlet.http.HttpServletResponse;
 import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
+import com.joshcummings.codeplay.terracotta.service.EmailService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 import com.joshcummings.codeplay.terracotta.service.passwords.Evaluation;
 import com.joshcummings.codeplay.terracotta.service.passwords.PasswordEntropyEvaluator;
 import com.joshcummings.codeplay.terracotta.service.passwords.WeakPasswordEntropyEvaluator;
+
+import static com.j256.twofactorauth.TimeBasedOneTimePasswordUtil.generateBase32Secret;
+import static com.j256.twofactorauth.TimeBasedOneTimePasswordUtil.qrImageUrl;
 
 /**
  * This class makes Terracotta Bank vulnerable to Enumeration
@@ -51,11 +55,14 @@ public class RegisterServlet extends HttpServlet {
 
 	private AccountService accountService;
 	private UserService userService;
+	private EmailService emailService;
+
 	private PasswordEntropyEvaluator entropyEvaluator = new WeakPasswordEntropyEvaluator();
 
-	public RegisterServlet(AccountService accountService, UserService userService) {
+	public RegisterServlet(AccountService accountService, UserService userService, EmailService emailService) {
 		this.accountService = accountService;
 		this.userService = userService;
+		this.emailService = emailService;
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -72,12 +79,19 @@ public class RegisterServlet extends HttpServlet {
 		if ( !evaluation.isSuccess() ) {
 			request.setAttribute("registrationErrorMessage",
 					"Your password (" + password + ") isn't strong enough: <br/>" +
-					evaluation.getDetails().stream().collect(Collectors.joining("<br/>")));
+							evaluation.getDetails().stream().collect(Collectors.joining("<br/>")));
 			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
 			return;
 		}
 
-		User user = new User(String.valueOf(this.nextUserNumber++), username, password, name, email);
+		boolean secondFactor = request.getParameter("useSecondFactor") != null;
+
+		String secret = null;
+		if ( secondFactor ) {
+			secret = generateBase32Secret();
+		}
+
+		User user = new User(String.valueOf(this.nextUserNumber++), username, password, name, email, secret);
 		Account account = new Account(String.valueOf(this.nextAccountNumber++),
 								new BigDecimal("25"),
 								this.nextAccountNumber++,
@@ -86,6 +100,19 @@ public class RegisterServlet extends HttpServlet {
 		try {
 			this.userService.addUser(user);
 			this.accountService.addAccount(account);
+
+			String message = "Your account number is: <b>" + account.getNumber() + "</b><br/>" +
+					"Your password is: <b>" + user.getPassword() + "</b><br/>";
+
+			if ( secondFactor ) {
+				message += "You have signed up for two-factor authentication, good job! " +
+						"Scan this QR code using Google Authenticator to link the app with our site.<br/>" +
+						"<img src=\"" + qrImageUrl("Terracotta%20Bank", secret) + "\"/><br/>";
+			}
+
+			message += "Sincerely, Terracotta Bank Management";
+
+			this.emailService.sendMessage(email, "Welcome to Terracotta Bank!", message);
 
 			request.getSession().setAttribute("authenticatedUser", user);
 			request.getSession().setAttribute("authenticatedAccount", account);
