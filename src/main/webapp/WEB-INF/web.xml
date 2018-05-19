@@ -1,0 +1,21 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+		 version="3.0">
+
+	<!--
+		To use this web.xml, build Terracotta Bank from the command line:
+
+			./gradlew build -DskipTests
+
+		And then deploy the war in build/libs to your local application server
+		(like Tomcat):
+
+			cp $TERRACOTTA_BANK_HOME/build/libs/terracotta-bank-spring.war $CATALINA_HOME/webapps/ROOT.war
+
+			$CATALINA_HOME/bin/catalina.sh start
+	-->
+
+	<display-name>Terracotta Bank</display-name>
+</web-app>

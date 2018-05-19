@@ -32,8 +32,12 @@ repositories {
     mavenLocal()
 }
 
+bootWar.archiveName = "${project.name}.${bootWar.extension}"
 
 dependencies {
+	// uncomment the line below if deploying to a separate application server
+	// providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	//compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.boot:spring-boot-starter-web')
