@@ -7,7 +7,7 @@
 	<!--
 		To use this web.xml, build Terracotta Bank from the command line:
 
-			./gradlew build -DskipTests
+			./gradlew clean build -DskipTests
 
 		And then deploy the war in build/libs to your local application server
 		(like Tomcat):
@@ -18,4 +18,48 @@
 	-->
 
 	<display-name>Terracotta Bank</display-name>
+
+	<!--
+		To mandate HTTPS at the container level requires configuring a certificate. This can be done
+		with a few simple commands (for testing purposes):
+
+			keytool
+					-genkey \
+					-keystore ~/.keystore \
+					-alias tomcat \
+					-keyalg RSA
+
+			vim $CATALINA_HOME/conf/server.xml
+
+		and find the Connector for port 8443 that uses the Http11NioProtocol protocol class, and edit:
+
+			<Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
+					   maxThreads="150" SSLEnabled="true"
+					   alias="tomcat"
+					   keystoreFile="${user.home}/.keystore"
+					   keystorePass="whatever-password-you-picked-when-creating-the-keystore"/>
+	-->
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>The Entire Site</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+
+	<!-- It's harder to justify exceptions to HTTPS these days, but here is an example anyway -->
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>An imaginary section that can be HTTP</web-resource-name>
+			<url-pattern>*.css</url-pattern>
+			<http-method-omission>GET</http-method-omission>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
 </web-app>
