@@ -15,6 +15,7 @@
  */
 package com.joshcummings.codeplay.terracotta.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
@@ -41,13 +42,22 @@ public class EmailService {
 	{
 		properties.setProperty("mail.smtp.host", host);
 		properties.setProperty("mail.smtp.auth", "true");
+		properties.setProperty("mail.smtp.port", "587");
 	}
 
+	private String apiKey;
+	private String apiSecret;
+
+	public EmailService(@Value("${mailjet.api.key}") String apiKey,
+						@Value("${mailjet.api.secret}") String apiSecret) {
+		this.apiKey = apiKey;
+		this.apiSecret = apiSecret;
+	}
 
 	public void sendMessage(String to, String subject, String content) {
 		Session session = Session.getDefaultInstance(properties, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("49ef5e4854ccd94d532dd275b77135b8", "296e1e0085b8aa90e06da635c357ecf1");
+				return new PasswordAuthentication(apiKey, apiSecret);
 			}
 		});
 
@@ -57,7 +67,7 @@ public class EmailService {
 			message.setFrom(new InternetAddress(from));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 			message.setSubject(subject);
-			message.setText(content);
+			message.setContent(content, "text/html; charset=utf-8");
 			Transport.send(message);
 		} catch (MessagingException mex) {
 			throw new IllegalStateException(mex);

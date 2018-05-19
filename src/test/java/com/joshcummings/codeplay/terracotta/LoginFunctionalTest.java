@@ -205,7 +205,7 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 
 		// even though the username and password were correct, this account requires a second factor, too.
 
-		Assert.assertTrue(content.contains("Something about your login information was incorrect."));
+		Assert.assertTrue(content.contains("Something about the login provided is incorrect."));
 	}
 
 	private Map.Entry<String, String> attemptLogin(String username) {

@@ -173,6 +173,17 @@ img:hover {
 #login input {
   height: 50px;
 }
+#login label {
+  font-size: 16px;
+  font-family: 'Raleway', sans-serif;
+}
+#login input[type="checkbox"] {
+    height: 13px;
+    margin: 0;
+    position: relative;
+    margin-right: 12px;
+    top: 1px;
+}
 #login input[type="submit"] {
   background: #444;
   color: #ffffff;
