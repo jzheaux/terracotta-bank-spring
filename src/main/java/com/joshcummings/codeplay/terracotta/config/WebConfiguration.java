@@ -15,6 +15,7 @@
  */
 package com.joshcummings.codeplay.terracotta.config;
 
+import com.joshcummings.codeplay.terracotta.app.SecureResponseHeadersFilter;
 import com.joshcummings.codeplay.terracotta.app.UserFilter;
 import com.joshcummings.codeplay.terracotta.metrics.RequestClassificationFilter;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
@@ -55,6 +56,15 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Bean
 	public Filter userFilter(AccountService accountService, UserService userService) {
 		return new UserFilter(accountService, userService);
+	}
+
+	@Bean
+	public FilterRegistrationBean secureResponseHeadersFilter() {
+		FilterRegistrationBean bean = new FilterRegistrationBean();
+		bean.setFilter(new SecureResponseHeadersFilter());
+		bean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
+				DispatcherType.ERROR);
+		return bean;
 	}
 
 	@Bean
