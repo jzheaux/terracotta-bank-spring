@@ -39,7 +39,7 @@ public class UserFilter implements Filter {
 	private AccountService accountService;
 	private UserService userService;
 
-	public UserFilter(AccountService accountService) {
+	public UserFilter(AccountService accountService, UserService userService) {
 		this.accountService = accountService;
 		this.userService = userService;
 	}

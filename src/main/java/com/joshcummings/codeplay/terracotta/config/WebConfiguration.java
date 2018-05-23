@@ -53,8 +53,8 @@ import java.util.Arrays;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 	@Bean
-	public Filter userFilter(AccountService accountService) {
-		return new UserFilter(accountService);
+	public Filter userFilter(AccountService accountService, UserService userService) {
+		return new UserFilter(accountService, userService);
 	}
 
 	@Bean
