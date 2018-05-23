@@ -87,7 +87,7 @@ http://www.tooplate.com/view/2080-minimax
 						<i class="fa fa-group"></i>
 						<h3>Login</h3>
 						<p>Enter your virtual terracotta vault</p>
-						<form action="${pageContext.request.contextPath}/login" method="post" role="form">
+						<form action="${pageContext.request.contextPath}/appLogin" method="post" role="form">
 							<div class="col-md-12 col-sm-12 messages">${loginErrorMessage}</div>
 							<div class="col-md-12 col-sm-12">
 								<input name="username" type="text" class="form-control" id="username" placeholder="Username">
