@@ -60,6 +60,25 @@ public class UserService extends ServiceSupport {
 		return users.isEmpty() ? null : users.iterator().next();
 	}
 
+	public User findByExternalUsername(String username) {
+		Set<User> users = runQuery("SELECT * FROM users WHERE external_username = ?",
+				ps -> {
+					try {
+						ps.setString(1, username);
+						return ps;
+					} catch ( SQLException e ) {
+						throw new IllegalStateException(e);
+					}
+				},
+				rs -> {
+					try {
+						return new User(rs.getString(1), rs.getString(4), rs.getString(5), rs.getString(2), rs.getString(3));
+					} catch ( SQLException e ) {
+						throw new IllegalStateException(e);
+					}
+				});
+		return users.isEmpty() ? null : users.iterator().next();
+	}
 	public Integer count() {
 		return super.count("users");
 	}
