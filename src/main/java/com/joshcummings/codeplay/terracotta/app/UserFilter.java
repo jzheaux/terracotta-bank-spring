@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Set;
@@ -65,8 +66,13 @@ public class UserFilter implements Filter {
 					if ( authorization != null && authorization.startsWith("Basic ") ) {
 						String basic =  authorization.substring(6);
 						String[] up = new String(Base64.getDecoder().decode(basic)).split(":");
+
 						user = this.userService.findByUsernameAndPassword(up[0], up[1]);
-						request.getSession().setAttribute("authenticatedUser", user);
+						if ( user != null ) {
+							request.getSession().setAttribute("authenticatedUser", this.userService.findByUsername(up[0]));
+						} else {
+							((HttpServletResponse) resp).setStatus(403);
+						}
 					}
 				}
 
