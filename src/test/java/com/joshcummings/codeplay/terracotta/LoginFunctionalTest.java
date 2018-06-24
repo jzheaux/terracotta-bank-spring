@@ -17,37 +17,26 @@ package com.joshcummings.codeplay.terracotta;
 
 import com.joshcummings.codeplay.terracotta.testng.TestConstants;
 import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.http.client.methods.RequestBuilder.post;
+import static org.junit.Assert.assertEquals;
 
 public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	@AfterMethod(alwaysRun=true)
@@ -56,7 +45,7 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	}
 	
 	@Test(groups="web")
-	public void testLoginForXss() throws InterruptedException {		
+	public void testLoginForXss() throws InterruptedException {
 		for ( String template : new XssCheatSheet() ) {
 			goToPage("/");
 			
@@ -102,41 +91,27 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 
 	@Test(groups="enumeration")
 	public void testLoginForEnumeration() throws Exception {
-		MultiValueMap<String, String> usernamesByResponseType = new LinkedMultiValueMap<>();
+		try (
+				CloseableHttpResponse exists = http.post(post("/login")
+					.addParameter("username", "admin")
+					.addParameter("password", "theincorrectpassword"));
 
-		ExecutorService executors = Executors.newFixedThreadPool(32);
-		List<Future<Map.Entry<String, String>>> futures = new ArrayList<>();
+				CloseableHttpResponse notsomuch = http.post(post("/login")
+					.addParameter("username", "anonexistentuser")
+					.addParameter("password", "doesntmatter")) ) {
 
-		Set<String> usernamesToTest = new HashSet<>();
+			List<String> existHeaderNames = Stream.of(exists.getAllHeaders())
+					.map(header -> header.getName())
+					.collect(Collectors.toList());
 
-		Set<String> firstNames =
-			readAllLines("first-names.csv")
-				.flatMap((firstName) -> Stream.of(firstName.split(",")))
-				.collect(Collectors.toSet());
+			List<String> notsomuchHeaderNames = Stream.of(notsomuch.getAllHeaders())
+					.map(header -> header.getName())
+					.collect(Collectors.toList());
 
-		firstNames.stream()
-			.forEach((firstName) -> {
-				readAllLines("last-names.csv")
-					.forEach((lastName) -> {
-						usernamesToTest.add(firstName.toLowerCase());
-						usernamesToTest.add(firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase());
-						usernamesToTest.add(firstName.toLowerCase() + "." + lastName.toLowerCase());
-					});
-				}
-			);
-
-		System.out.println("Will test " + usernamesToTest.size() + " usernames");
-
-		for ( String username : usernamesToTest ) {
-			futures.add(executors.submit(() -> attemptLogin(username)));
+			assertEquals(exists.getStatusLine().toString(), notsomuch.getStatusLine().toString());
+			assertEquals(existHeaderNames, notsomuchHeaderNames);
+			assertStreamEquals(exists.getEntity().getContent(), notsomuch.getEntity().getContent());
 		}
-
-		for ( Future<Map.Entry<String, String>> f : futures ) {
-			Map.Entry<String, String> ret = f.get();
-			usernamesByResponseType.add(ret.getKey(), ret.getValue());
-		}
-
-		Assert.assertEquals(1, usernamesByResponseType.size(), "Potential enumeration vulnerability, these appear to be legit usernames " + usernamesByResponseType.get("password"));
 	}
 
 	@Test(groups="bruteforce")
@@ -214,9 +189,7 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 						.addParameter("username", username)
 						.addParameter("password", "oi12bu34ci 123h 4dp2i3h4 234jn"));
 
-		boolean passwordFailed = content.contains("The password");
-
-		return new AbstractMap.SimpleImmutableEntry<>(passwordFailed ? "password" : "username", username);
+		return new AbstractMap.SimpleImmutableEntry<>(content, username);
 	}
 
 	private boolean detectBruteForce(String username) throws Exception {
@@ -228,9 +201,29 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 		return content.contains("This account has been temporarily locked");
 	}
 
-	private Stream<String> readAllLines(String filename) {
-		InputStream is = this.getClass().getClassLoader().getResourceAsStream(filename);
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		return br.lines();
+	private static void assertStreamEquals(InputStream expectedInput, InputStream actualInput)
+		throws IOException {
+
+		int expectedRead = -1;
+		int actualRead = -1;
+
+		ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
+		ByteArrayOutputStream actualOutput = new ByteArrayOutputStream();
+
+		while ( ( expectedRead = expectedInput.read() ) != -1 &&
+				( actualRead = actualInput.read() ) != -1 ) {
+			expectedOutput.write(expectedRead);
+			actualOutput.write(actualRead);
+
+			if ( expectedRead != actualRead ) {
+				break;
+			}
+		}
+
+		if ( expectedRead != actualRead ) {
+			String expected = new String(expectedOutput.toByteArray());
+			String actual = new String(actualOutput.toByteArray());
+			assertEquals(expected, actual);
+		}
 	}
 }
