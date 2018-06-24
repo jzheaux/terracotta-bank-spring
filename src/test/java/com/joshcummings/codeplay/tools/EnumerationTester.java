@@ -43,7 +43,7 @@ public class EnumerationTester {
 	}
 
 	public static void main(String[] args) throws Exception {
-		String dummyUsernameResponse = attemptLogin(UUID.randomUUID().toString()).getValue();
+		String dummyUsernameResponse = attemptLogin(UUID.randomUUID().toString()).getKey();
 
 		ExecutorService executors = Executors.newFixedThreadPool(4);
 		List<Future<Map.Entry<String, String>>> futures = new ArrayList<>();
@@ -77,6 +77,7 @@ public class EnumerationTester {
 			usernamesByResponseType.add(ret.getKey(), ret.getValue());
 		}
 
-		System.out.println("These appear to be legit usernames " + usernamesByResponseType.get(dummyUsernameResponse));
+		usernamesByResponseType.remove(dummyUsernameResponse);
+		System.out.println("These appear to be legit usernames " + usernamesByResponseType.values());
 	}
 }
