@@ -8,6 +8,9 @@
 				<include name="log" />
 				<include name="http" />
 				<include name="data" />
+				<include name="enumeration" />
+				<include name="bruteforce" />
+				<include name="plaintext" />
 			</run>
 		</groups>
 		
