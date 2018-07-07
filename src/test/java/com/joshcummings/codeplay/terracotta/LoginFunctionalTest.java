@@ -125,15 +125,15 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 
 	@Test(groups="bruteforce")
 	public void testLoginForSingleAccountBruteForce() throws Exception {
-		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertFalse(detectBruteForce("admin"));
-		Assert.assertTrue(detectBruteForce("admin"));
-		Assert.assertTrue(detectBruteForce("admin"));
-		Assert.assertTrue(detectBruteForce("admin"));
-		Assert.assertTrue(detectBruteForce("admin"));
+		Assert.assertFalse(detectBruteForce("upton.sinclair"));
+		Assert.assertFalse(detectBruteForce("upton.sinclair"));
+		Assert.assertFalse(detectBruteForce("upton.sinclair"));
+		Assert.assertFalse(detectBruteForce("upton.sinclair"));
+		Assert.assertFalse(detectBruteForce("upton.sinclair"));
+		Assert.assertTrue(detectBruteForce("upton.sinclair"));
+		Assert.assertTrue(detectBruteForce("upton.sinclair"));
+		Assert.assertTrue(detectBruteForce("upton.sinclair"));
+		Assert.assertTrue(detectBruteForce("upton.sinclair"));
 	}
 
 	@Test(groups="bruteforce")
