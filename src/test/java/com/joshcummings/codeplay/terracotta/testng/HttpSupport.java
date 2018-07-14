@@ -15,6 +15,8 @@
  */
 package com.joshcummings.codeplay.terracotta.testng;
 
+import java.io.IOException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -24,15 +26,11 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.testng.Assert;
-
-import java.io.IOException;
-import java.util.function.Consumer;
 
 import static org.apache.http.client.methods.RequestBuilder.get;
 
 public class HttpSupport {
-	protected CloseableHttpClient httpclient = HttpClients.createDefault();
+	protected CloseableHttpClient httpclient = HttpClients.custom().disableCookieManagement().build();
 	protected HttpHost proxy = new HttpHost("localhost", 8081, "http");
 	protected RequestConfig config;
 	

