@@ -24,6 +24,8 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -112,6 +114,14 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 			assertEquals(existHeaderNames, notsomuchHeaderNames);
 			assertStreamEquals(exists.getEntity().getContent(), notsomuch.getEntity().getContent());
 		}
+	}
+
+	@BeforeTest(groups="bruteforce")
+	public void clearIpSoftLockoutCache() {
+		http.postForContent(
+				post("/login")
+						.addParameter("username", "josh.cummings")
+						.addParameter("password", "j0sh"));
 	}
 
 	@Test(groups="bruteforce")
