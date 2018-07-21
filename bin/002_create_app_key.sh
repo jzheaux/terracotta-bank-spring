@@ -1,6 +1,10 @@
 ###
-# Generate a key and keystore for Terracotta Bank
+#
+# Generate a key and keystore 
+# for Terracotta Bank
+#
 ###
 
-keytool -genkey -alias terracotta -keyalg RSA -keystore terracotta.jks -keysize 2048
-
+keytool -genkey -keyalg RSA -keysize 2048 \
+        -alias terracotta \
+        -keystore terracotta.jks
