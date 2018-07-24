@@ -10,5 +10,5 @@
 ###
 
 keytool -import -file ca.pem \
-        -alias ca
+        -alias ca \
         -keystore terracotta.jks
