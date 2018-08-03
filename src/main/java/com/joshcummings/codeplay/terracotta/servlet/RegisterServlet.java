@@ -18,7 +18,9 @@ package com.joshcummings.codeplay.terracotta.servlet;
 import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
+import com.joshcummings.codeplay.terracotta.service.PasswordComplexityEvaluator;
 import com.joshcummings.codeplay.terracotta.service.UserService;
+import com.joshcummings.codeplay.terracotta.service.WeakPasswordComplexityEvaluator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,6 +49,7 @@ public class RegisterServlet extends HttpServlet {
 
 	private AccountService accountService;
 	private UserService userService;
+	private PasswordComplexityEvaluator passwordVerifier = new WeakPasswordComplexityEvaluator();
 
 	public RegisterServlet(AccountService accountService, UserService userService) {
 		this.accountService = accountService;
@@ -62,6 +65,16 @@ public class RegisterServlet extends HttpServlet {
 		String password = request.getParameter("registerPassword");
 		String name = request.getParameter("registerName");
 		String email = request.getParameter("registerEmail");
+
+		if ( !this.passwordVerifier.evaluate(password) ) {
+			request.setAttribute("registrationErrorMessage",
+					"The password (" + password + ") doesn't meet our security guidelines: <br/>" +
+							"* 6 to 20 characters <br/>" +
+							"* Having at least a lower-case letter, upper-case letter, and number<br/>" +
+							"* Having at least one of !@#^");
+			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
+			return;
+		}
 
 		User user = new User(String.valueOf(this.nextUserNumber++), username, password, name, email);
 		Account account = new Account(String.valueOf(this.nextAccountNumber++),

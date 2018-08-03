@@ -15,6 +15,8 @@
  */
 package com.joshcummings.codeplay.terracotta;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.RequestBuilder;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -57,5 +59,56 @@ public class RegisterFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 			logout();
 		}
 
+	}
+
+	@Test(groups="password")
+	public void testRegisterWithShortPassword() {
+		String response = attemptRegistration("username", "1P@ss!");
+		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+	}
+
+	@Test(groups="password")
+	public void testRegisterWithLongPassword() {
+		String response = attemptRegistration("username", "longhorn-pacifiers-running-witherspoon-distilleries");
+		Assert.assertTrue(response.contains("Welcome, Partridge"));
+	}
+
+	@Test(groups="password")
+	public void testRegisterWithPasswordContainingSpaces() {
+		String response = attemptRegistration("username", "longhorn pacifiers running witherspoon distilleries");
+		Assert.assertTrue(response.contains("Welcome, Partridge"));
+	}
+
+	@Test(groups="password")
+	public void testRegisterWithPasswordUsingDictionaryWord() {
+		String response = attemptRegistration("username", "longhorn");
+		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+	}
+
+	@Test(groups="password")
+	public void testRegisterWithPasswordUsingLeetifiedDictionaryWord() {
+		String response = attemptRegistration("username", "L0ngh0rn!");
+		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+	}
+
+	@Test(groups="password")
+	public void testRegisterWithPatternedPassword() {
+		String response = attemptRegistration("username", "1357924680Abc!");
+		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+	}
+
+	@Test(groups="password")
+	public void testRegisterWithCommonPassword() {
+		String response = attemptRegistration("username", "P@ssw0rd!");
+		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+	}
+
+	private String attemptRegistration(String username, String password) {
+		return
+				http.postForContent(RequestBuilder.post("/register")
+						.addParameter("registerUsername", username)
+						.addParameter("registerPassword", password)
+						.addParameter("registerName", "Partridge Peartree")
+						.addParameter("registerEmail", "partridge@peartree.com"));
 	}
 }
