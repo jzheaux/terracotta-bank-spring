@@ -15,9 +15,15 @@
  */
 package com.joshcummings.codeplay.terracotta.service;
 
+import com.joshcummings.codeplay.terracotta.model.User;
+
 /**
  * @author Josh Cummings
  */
 public interface PasswordComplexityEvaluator {
 	boolean evaluate(String password);
+
+	default boolean evaluate(String password, User user) {
+		return evaluate(password);
+	}
 }
