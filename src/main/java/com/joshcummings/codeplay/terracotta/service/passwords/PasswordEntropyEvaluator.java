@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.joshcummings.codeplay.terracotta.service;
+package com.joshcummings.codeplay.terracotta.service.passwords;
 
 import com.joshcummings.codeplay.terracotta.model.User;
 
 /**
  * @author Josh Cummings
  */
-public interface PasswordComplexityEvaluator {
-	boolean evaluate(String password);
+public interface PasswordEntropyEvaluator {
+	Evaluation evaluate(String password);
 
-	default boolean evaluate(String password, User user) {
+	default Evaluation evaluate(String password, User user) {
 		return evaluate(password);
 	}
 }

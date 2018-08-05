@@ -15,19 +15,21 @@
  */
 package com.joshcummings.codeplay.terracotta.servlet;
 
-import com.joshcummings.codeplay.terracotta.model.Account;
-import com.joshcummings.codeplay.terracotta.model.User;
-import com.joshcummings.codeplay.terracotta.service.AccountService;
-import com.joshcummings.codeplay.terracotta.service.PasswordComplexityEvaluator;
-import com.joshcummings.codeplay.terracotta.service.UserService;
-import com.joshcummings.codeplay.terracotta.service.WeakPasswordComplexityEvaluator;
-
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.math.BigDecimal;
+
+import com.joshcummings.codeplay.terracotta.model.Account;
+import com.joshcummings.codeplay.terracotta.model.User;
+import com.joshcummings.codeplay.terracotta.service.AccountService;
+import com.joshcummings.codeplay.terracotta.service.UserService;
+import com.joshcummings.codeplay.terracotta.service.passwords.Evaluation;
+import com.joshcummings.codeplay.terracotta.service.passwords.PasswordEntropyEvaluator;
+import com.joshcummings.codeplay.terracotta.service.passwords.WeakPasswordEntropyEvaluator;
 
 /**
  * This class makes Terracotta Bank vulnerable to Enumeration
@@ -49,7 +51,7 @@ public class RegisterServlet extends HttpServlet {
 
 	private AccountService accountService;
 	private UserService userService;
-	private PasswordComplexityEvaluator passwordVerifier = new WeakPasswordComplexityEvaluator();
+	private PasswordEntropyEvaluator entropyEvaluator = new WeakPasswordEntropyEvaluator();
 
 	public RegisterServlet(AccountService accountService, UserService userService) {
 		this.accountService = accountService;
@@ -66,12 +68,11 @@ public class RegisterServlet extends HttpServlet {
 		String name = request.getParameter("registerName");
 		String email = request.getParameter("registerEmail");
 
-		if ( !this.passwordVerifier.evaluate(password) ) {
+		Evaluation evaluation = this.entropyEvaluator.evaluate(password);
+		if ( !evaluation.isSuccess() ) {
 			request.setAttribute("registrationErrorMessage",
-					"The password (" + password + ") doesn't meet our security guidelines: <br/>" +
-							"* 6 to 20 characters <br/>" +
-							"* Having at least a lower-case letter, upper-case letter, and number<br/>" +
-							"* Having at least one of !@#^");
+					"Your password (" + password + ") isn't strong enough: <br/>" +
+					evaluation.getDetails().stream().collect(Collectors.joining("<br/>")));
 			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
 			return;
 		}

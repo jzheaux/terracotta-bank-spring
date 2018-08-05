@@ -62,7 +62,7 @@ public class RegisterFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	@Test(groups="password")
 	public void testRegisterWithShortPassword() {
 		String response = attemptRegistration("short", "1P@ss!");
-		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+		Assert.assertTrue(response.contains("isn't strong enough"));
 	}
 
 	@Test(groups="password")
@@ -86,25 +86,25 @@ public class RegisterFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	@Test(groups="password")
 	public void testRegisterWithPasswordUsingDictionaryWord() {
 		String response = attemptRegistration("dictionary", "longhorn");
-		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+		Assert.assertTrue(response.contains("isn't strong enough"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithPasswordUsingLeetifiedDictionaryWord() {
 		String response = attemptRegistration("1337", "L0ngh0rn!");
-		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+		Assert.assertTrue(response.contains("isn't strong enough"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithPatternedPassword() {
 		String response = attemptRegistration("pattern", "1357924680Abc!");
-		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+		Assert.assertTrue(response.contains("isn't strong enough"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithCommonPassword() {
 		String response = attemptRegistration("common", "P@ssw0rd!");
-		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
+		Assert.assertTrue(response.contains("isn't strong enough"));
 	}
 
 	private String attemptRegistration(String username, String password) {
