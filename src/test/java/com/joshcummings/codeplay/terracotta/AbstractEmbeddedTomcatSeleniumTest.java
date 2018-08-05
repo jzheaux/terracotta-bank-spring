@@ -33,8 +33,11 @@ import org.testng.ITestContext;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+
+import static org.apache.http.client.methods.RequestBuilder.post;
 
 public class AbstractEmbeddedTomcatSeleniumTest {
 	static WebDriver driver;
@@ -126,6 +129,7 @@ public class AbstractEmbeddedTomcatSeleniumTest {
 	
 	protected void logout() {
 		goToPage("/logout");
+		http.postForContent(post("/logout"));
 	}
 	
 	protected String getTextThenDismiss(Alert alert) {

@@ -25,12 +25,16 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 
 import static org.apache.http.client.methods.RequestBuilder.get;
 
 public class HttpSupport {
-	protected CloseableHttpClient httpclient = HttpClients.custom().disableCookieManagement().build();
+	protected CloseableHttpClient httpclient = HttpClients.custom()
+			.setRedirectStrategy(new LaxRedirectStrategy())
+			.build();
+
 	protected HttpHost proxy = new HttpHost("localhost", 8081, "http");
 	protected RequestConfig config;
 	
