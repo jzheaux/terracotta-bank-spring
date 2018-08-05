@@ -28,6 +28,7 @@ import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 import com.joshcummings.codeplay.terracotta.service.passwords.Evaluation;
+import com.joshcummings.codeplay.terracotta.service.passwords.NbvcxzPasswordEntropyEvaluator;
 import com.joshcummings.codeplay.terracotta.service.passwords.PasswordEntropyEvaluator;
 import com.joshcummings.codeplay.terracotta.service.passwords.WeakPasswordEntropyEvaluator;
 
@@ -51,7 +52,7 @@ public class RegisterServlet extends HttpServlet {
 
 	private AccountService accountService;
 	private UserService userService;
-	private PasswordEntropyEvaluator entropyEvaluator = new WeakPasswordEntropyEvaluator();
+	private PasswordEntropyEvaluator entropyEvaluator = new NbvcxzPasswordEntropyEvaluator();
 
 	public RegisterServlet(AccountService accountService, UserService userService) {
 		this.accountService = accountService;
