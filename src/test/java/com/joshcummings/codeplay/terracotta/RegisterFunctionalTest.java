@@ -15,20 +15,18 @@
  */
 package com.joshcummings.codeplay.terracotta;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
+import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
 import org.apache.http.client.methods.RequestBuilder;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-
-import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
 
 public class RegisterFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 
-	@AfterClass(alwaysRun=true)
+	@AfterMethod(alwaysRun=true)
 	public void doLogout() {
 		logout();
 	}
@@ -63,52 +61,57 @@ public class RegisterFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 
 	@Test(groups="password")
 	public void testRegisterWithShortPassword() {
-		String response = attemptRegistration("username", "1P@ss!");
+		String response = attemptRegistration("short", "1P@ss!");
 		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithLongPassword() {
-		String response = attemptRegistration("username", "longhorn-pacifiers-running-witherspoon-distilleries");
+		String response = attemptRegistration("long", "Longh0rn-p@cifiers-running-witherspoon-distilleries");
 		Assert.assertTrue(response.contains("Welcome, Partridge"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithPasswordContainingSpaces() {
-		String response = attemptRegistration("username", "longhorn pacifiers running witherspoon distilleries");
+		String response = attemptRegistration("withspaces", "Longh0rn p@cifiers running witherspoon distilleries");
+		Assert.assertTrue(response.contains("Welcome, Partridge"));
+	}
+
+	@Test(groups="password")
+	public void testRegisterWithHighEntropyPassword() {
+		String response = attemptRegistration("entropyrocks", "longhorn-pacifiers-running-witherspoon-distilleries");
 		Assert.assertTrue(response.contains("Welcome, Partridge"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithPasswordUsingDictionaryWord() {
-		String response = attemptRegistration("username", "longhorn");
+		String response = attemptRegistration("dictionary", "longhorn");
 		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithPasswordUsingLeetifiedDictionaryWord() {
-		String response = attemptRegistration("username", "L0ngh0rn!");
+		String response = attemptRegistration("1337", "L0ngh0rn!");
 		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithPatternedPassword() {
-		String response = attemptRegistration("username", "1357924680Abc!");
+		String response = attemptRegistration("pattern", "1357924680Abc!");
 		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
 	}
 
 	@Test(groups="password")
 	public void testRegisterWithCommonPassword() {
-		String response = attemptRegistration("username", "P@ssw0rd!");
+		String response = attemptRegistration("common", "P@ssw0rd!");
 		Assert.assertTrue(response.contains("doesn't meet our security guidelines"));
 	}
 
 	private String attemptRegistration(String username, String password) {
-		return
-				http.postForContent(RequestBuilder.post("/register")
+		return http.postForContent(RequestBuilder.post("/register")
 						.addParameter("registerUsername", username)
 						.addParameter("registerPassword", password)
 						.addParameter("registerName", "Partridge Peartree")
-						.addParameter("registerEmail", "partridge@peartree.com"));
+						.addParameter("registerEmail", username + "@peartree.com"));
 	}
 }
