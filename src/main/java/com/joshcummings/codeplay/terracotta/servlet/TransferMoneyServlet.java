@@ -51,7 +51,7 @@ public class TransferMoneyServlet extends HttpServlet {
 						HttpServletRequest request,
 						HttpServletResponse response) throws ServletException, IOException {
 
-		User user = (User)request.getSession().getAttribute("authenticatedUser");
+		User user = (User)request.getAttribute("authenticatedUser");
 
 		List<String> errors = new ArrayList<>();
 		

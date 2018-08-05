@@ -39,7 +39,7 @@ public class AccountServlet extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if ( request.getSession().getAttribute("authenticatedUser") == null ) {
+		if ( request.getAttribute("authenticatedUser") == null ) {
 			response.sendRedirect(request.getContextPath() + "/employee.jsp?relay=" + request.getRequestURL().toString());
 		} else {
 			Set<Account> accounts = this.accountService.findAll();

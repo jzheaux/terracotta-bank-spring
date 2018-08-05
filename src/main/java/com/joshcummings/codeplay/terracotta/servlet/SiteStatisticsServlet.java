@@ -47,7 +47,7 @@ public class SiteStatisticsServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		User user = (User)req.getSession().getAttribute("authenticatedUser");
+		User user = (User)req.getAttribute("authenticatedUser");
 
 		if ( user != null && "system".equals(user.getUsername()) ) {
 			int userCount = this.userService.count();

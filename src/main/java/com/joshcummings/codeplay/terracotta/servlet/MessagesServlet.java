@@ -46,7 +46,7 @@ public class MessagesServlet extends HttpServlet {
 						HttpServletRequest request,
 						HttpServletResponse response) throws ServletException, IOException {
 
-		if ( request.getSession().getAttribute("authenticatedUser") == null )
+		if ( request.getAttribute("authenticatedUser") == null )
 		{
 			String relay = request.getRequestURL().toString();
 			response.sendRedirect(request.getContextPath() + "/employee.jsp?relay=" + relay);

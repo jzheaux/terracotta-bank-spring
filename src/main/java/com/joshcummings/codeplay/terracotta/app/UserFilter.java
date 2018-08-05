@@ -68,9 +68,7 @@ public class UserFilter implements Filter {
 						String[] up = new String(Base64.getDecoder().decode(basic)).split(":");
 
 						user = this.userService.findByUsernameAndPassword(up[0], up[1]);
-						if ( user != null ) {
-							request.getSession().setAttribute("authenticatedUser", this.userService.findByUsername(up[0]));
-						} else {
+						if ( user == null ) {
 							((HttpServletResponse) resp).setStatus(403);
 						}
 					}
@@ -78,6 +76,7 @@ public class UserFilter implements Filter {
 
 				if ( user != null ) {
 					Set<Account> accounts = this.accountService.findByUsername(user.getUsername());
+					request.setAttribute("authenticatedUser", user);
 					request.setAttribute("authenticatedAccounts", accounts);
 				}
 			}
