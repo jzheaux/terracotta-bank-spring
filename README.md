@@ -15,7 +15,7 @@ This approach allows for two things:
 - Second, those following along in a demo can start at any relevant point by jumping to that commit
 - Third, branches demonstrating different security features can be ad-hoc merged together to experiment with their composition
 
-### Securing Java Web Applications Through Authentication, Authorization, and Audit
+### Securing Java Web Applications Through Authentication
 
 
 The base branch for this course is `authentication-authorization-and-audit`.
@@ -23,17 +23,17 @@ All demo branches are based on this branch.
 
 The demo branches for this course are:
 
-* *`authentication-authorization-and-audit-m2-enumeration`* - For the family of demos related to mitigating enumeration attacks
-* *`authentication-authorization-and-audit-m2-bruteforce`* - For the family of demos related to mitigating brute-force attacks
-* *`authentication-authorization-and-audit-m2-tls`* - For the TLS demo in "Mitigating Plaintext Vulnerabilties with TLS"
-* *`authentication-authorization-and-audit-m2-oauth2`* - For the Spring Security OAuth2 demo in "Mitigating Plaintext Vulnerabilities with Tokens"
-* *`authentication-authorization-aud-audit-m2-saml`* - For the SAML demo in "Mitigating Plaintext Vulnerabilities through Federation"
+* *`authentication-enumeration`* - For the family of demos related to mitigating enumeration attacks
 
-* *`authentication-authorization-and-audit-m3-nbvcxz`* - For the nbvcxz demo in "Mitigating Password Complexity Vulnerabilities"
-* *`authentication-authorization-and-audit-m3-bcrypt`* - For the family of demos related to mitigating password storage attacks
-* *`authentication-authorization-and-audit-m3-???`* - TBD for the demos related to insecure forgot and change password
+* *`authentication-bruteforce`* - For the family of demos related to mitigating brute-force attacks
 
-* *`authentication-authorization-and-audit-m4-???`* - TBD for demos related to authorization vulnerabilities
+* *`authentication-tls`* - For the TLS demo in "Mitigating Plaintext Vulnerabilties with TLS"
+* *`authentication-oauth2`* - For the Spring Security OAuth2 demo in "Mitigating Plaintext Vulnerabilities with Tokens"
+* *`authentication-saml`* - For the SAML demo in "Mitigating Plaintext Vulnerabilities through Federation"
 
-* *`authentication-authorization-and-audit-m5-???`* - TBD for demos related to audit practices
+* *`authentication-password-complexity`* - For the demos related to supporting complex passwords
+* *`authentication-password-storage`* - For the demos related to strong password storage techniques
+* *`authentication-password-update`* - For the demos related to secure forgot and change password flows
+
+* *`authentication-audit`* - TBD for demos related to authorization vulnerabilities
 
