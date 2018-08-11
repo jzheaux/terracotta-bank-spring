@@ -15,12 +15,13 @@
  */
 package com.joshcummings.codeplay.terracotta;
 
-import com.joshcummings.codeplay.terracotta.testng.DockerSupport;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+
 import com.joshcummings.codeplay.terracotta.testng.HttpSupport;
 import com.joshcummings.codeplay.terracotta.testng.ProxySupport;
 import com.joshcummings.codeplay.terracotta.testng.SeleniumSupport;
 import com.joshcummings.codeplay.terracotta.testng.TestConstants;
-import com.joshcummings.codeplay.terracotta.testng.TomcatSupport;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -33,30 +34,12 @@ import org.testng.ITestContext;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-
-import static org.apache.http.client.methods.RequestBuilder.post;
-
-public class AbstractEmbeddedTomcatSeleniumTest {
+public class AbstractEmbeddedTomcatSeleniumTest extends AbstractEmbeddedTomcatTest {
 	static WebDriver driver;
 	
 	protected SeleniumSupport selenium = new SeleniumSupport();
 	protected ProxySupport proxy = new ProxySupport();
-	protected TomcatSupport tomcat = new TomcatSupport();
-	protected DockerSupport docker = new DockerSupport();
 	protected HttpSupport honest = new HttpSupport(TestConstants.host);
-	protected HttpSupport http = new HttpSupport();
-	
-	@BeforeTest(alwaysRun=true)
-	public void start(ITestContext ctx) throws Exception {
-		if ( "docker".equals(ctx.getName()) ) {
-			docker().startContainer();
-		} else {
-			tomcat.startContainer();
-		}
-	}
 	
 	@BeforeTest(alwaysRun=true)
 	public void startSelenium() {
@@ -74,16 +57,7 @@ public class AbstractEmbeddedTomcatSeleniumTest {
 			docker().startClamav();
 		}
 	}
-	
-	@AfterTest(alwaysRun=true)
-	public void stop(ITestContext ctx) throws Exception {
-		if ( "docker".equals(ctx.getName()) ) {
-			docker().stopContainer();
-		} else {
-			tomcat.stopContainer();
-		}
-	}
-	
+
 	@AfterTest(alwaysRun=true)
 	public void shutdownSelenium() {
 		selenium.stop(driver);
@@ -99,10 +73,6 @@ public class AbstractEmbeddedTomcatSeleniumTest {
 		if ( "docker".equals(ctx.getName()) ) {
 			docker().stopClamav();
 		}
-	}
-
-	protected DockerSupport docker() {
-		return docker == null ? ( docker = new DockerSupport() ) : docker;
 	}
 
 	protected void goToPage(String page) {
@@ -128,8 +98,8 @@ public class AbstractEmbeddedTomcatSeleniumTest {
 	}
 	
 	protected void logout() {
+		super.logout();
 		goToPage("/logout");
-		http.postForContent(post("/logout"));
 	}
 	
 	protected String getTextThenDismiss(Alert alert) {
