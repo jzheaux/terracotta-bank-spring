@@ -32,8 +32,8 @@ public class UserServiceTest extends AbstractEmbeddedTomcatTest {
 
 		Assert.assertTrue(hashed.startsWith("$2a$"));
 		String[] parts = hashed.split("\\$");
-		Assert.assertTrue(parts.length == 3);
-		Integer strength = Integer.parseInt(parts[1]);
+		Assert.assertTrue(parts.length == 4);
+		Integer strength = Integer.parseInt(parts[2]);
 		Assert.assertTrue(strength >= 10); // str
 	}
 }
