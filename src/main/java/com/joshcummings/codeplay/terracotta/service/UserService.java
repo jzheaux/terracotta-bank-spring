@@ -33,9 +33,12 @@ import java.util.UUID;
 @Service
 public class UserService extends ServiceSupport {
 	public void addUser(User user) {
+		String password = user.getPassword();
+		String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
+
 		runUpdate("INSERT INTO users (id, username, password, name, email)"
 				+ " VALUES ('" + user.getId() + "','" + user.getUsername() + 
-				"','" + user.getPassword() + "','" + user.getName() + "','" + user.getEmail() + "')");
+				"','" + hashed + "','" + user.getName() + "','" + user.getEmail() + "')");
 	}
 
 	public User findByUsername(String username) {
