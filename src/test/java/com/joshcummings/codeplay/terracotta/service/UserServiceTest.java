@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class UserServiceTest extends AbstractEmbeddedTomcatTest {
 	@Test(groups="passwordstorage")
 	public void testSamePasswordDifferentHash() {
-		UserService userService = new UserService();
+		UserService userService = this.context.getBean(UserService.class);
 		User one = new User("one", "one", "password", "name", "one@terracotta");
 		userService.addUser(one);
 
@@ -23,7 +23,7 @@ public class UserServiceTest extends AbstractEmbeddedTomcatTest {
 
 	@Test(groups="passwordstorage")
 	public void testStrongPasswordHashAlgorithm() {
-		UserService userService = new UserService();
+		UserService userService = this.context.getBean(UserService.class);
 		User user = new User("user", "user", "password", "name", "user@terracotta");
 		userService.addUser(user);
 
