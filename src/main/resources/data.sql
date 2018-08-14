@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS accounts;
 DROP TABLE IF EXISTS checks;
 DROP TABLE IF EXISTS messages;
 
-CREATE TABLE users (id VARCHAR(64) PRIMARY KEY, name VARCHAR(256), email VARCHAR(256), username VARCHAR(64), password VARCHAR(64), is_admin BOOLEAN, UNIQUE (email), UNIQUE (username));
+CREATE TABLE users (id VARCHAR(64) PRIMARY KEY, name VARCHAR(256), email VARCHAR(256), username VARCHAR(64), password VARCHAR(128), is_admin BOOLEAN, UNIQUE (email), UNIQUE (username));
 CREATE TABLE accounts (id VARCHAR(64) PRIMARY KEY, amount NUMERIC(12,4), number INTEGER, owner_id VARCHAR(64));
 CREATE TABLE checks (id VARCHAR(64) PRIMARY KEY, amount NUMERIC(12,4), number VARCHAR(16), account_id VARCHAR(64));
 CREATE TABLE messages (id VARCHAR(62) PRIMARY KEY, name VARCHAR(256), email VARCHAR(256), subject VARCHAR(128), message VARCHAR(2048));
