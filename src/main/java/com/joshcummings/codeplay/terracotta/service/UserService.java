@@ -15,11 +15,14 @@
  */
 package com.joshcummings.codeplay.terracotta.service;
 
-import com.joshcummings.codeplay.terracotta.model.User;
-import org.springframework.stereotype.Service;
-
 import java.sql.SQLException;
 import java.util.Set;
+
+import com.joshcummings.codeplay.terracotta.model.User;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 /**
  * This class makes Terracotta Bank vulnerable to SQL injection
@@ -30,10 +33,15 @@ import java.util.Set;
  */
 @Service
 public class UserService extends ServiceSupport {
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
 	public void addUser(User user) {
+		String password = this.passwordEncoder.encode(user.getPassword());
+
 		runUpdate("INSERT INTO users (id, username, password, name, email)"
 				+ " VALUES ('" + user.getId() + "','" + user.getUsername() + 
-				"','" + user.getPassword() + "','" + user.getName() + "','" + user.getEmail() + "')");
+				"','" + password + "','" + user.getName() + "','" + user.getEmail() + "')");
 	}
 
 	public User findByUsername(String username) {
