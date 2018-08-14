@@ -30,7 +30,7 @@ public class UserServiceTest extends AbstractEmbeddedTomcatTest {
 		user = userService.findByUsername("user");
 		String hashed = user.getPassword();
 
-		Assert.assertTrue(hashed.startsWith("$2a$"));
+		Assert.assertTrue(hashed.contains("$2a$"));
 		String[] parts = hashed.split("\\$");
 		Assert.assertTrue(parts.length == 4);
 		Integer strength = Integer.parseInt(parts[2]);
