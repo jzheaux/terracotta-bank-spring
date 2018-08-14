@@ -21,6 +21,8 @@ import org.testng.ITestContext;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
+import org.springframework.context.ApplicationContext;
+
 import static org.apache.http.client.methods.RequestBuilder.post;
 
 public class AbstractEmbeddedTomcatTest {
@@ -28,12 +30,14 @@ public class AbstractEmbeddedTomcatTest {
 	protected DockerSupport docker = new DockerSupport();
 	protected HttpSupport http = new HttpSupport();
 
+	protected ApplicationContext context;
+
 	@BeforeTest(alwaysRun=true)
 	public void start(ITestContext ctx) throws Exception {
 		if ( "docker".equals(ctx.getName()) ) {
 			docker().startContainer();
 		} else {
-			tomcat.startContainer();
+			context = tomcat.startContainer();
 		}
 	}
 
