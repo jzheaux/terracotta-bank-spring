@@ -4,9 +4,11 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.UserService;
+import com.joshcummings.codeplay.terracotta.service.passwords.WrappingPasswordEncoder;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,8 +17,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.crypto.codec.Utf8;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
@@ -45,7 +49,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
-		return new OldPasswordEncoder();
+		Map<String, PasswordEncoder> encoders = Collections.singletonMap(
+				"bcrypt",
+				new WrappingPasswordEncoder(
+						new OldPasswordEncoder(),
+						new BCryptPasswordEncoder()
+				)
+		);
+		return new DelegatingPasswordEncoder("bcrypt", encoders);
 	}
 
 	@Bean
