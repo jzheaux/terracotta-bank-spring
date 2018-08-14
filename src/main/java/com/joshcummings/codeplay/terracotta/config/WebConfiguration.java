@@ -15,6 +15,13 @@
  */
 package com.joshcummings.codeplay.terracotta.config;
 
+import java.util.Arrays;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.Servlet;
+import javax.servlet.annotation.MultipartConfig;
+
 import com.joshcummings.codeplay.terracotta.app.UserFilter;
 import com.joshcummings.codeplay.terracotta.metrics.RequestClassificationFilter;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
@@ -27,14 +34,15 @@ import com.joshcummings.codeplay.terracotta.servlet.AdminLoginServlet;
 import com.joshcummings.codeplay.terracotta.servlet.CheckLookupServlet;
 import com.joshcummings.codeplay.terracotta.servlet.ContactUsServlet;
 import com.joshcummings.codeplay.terracotta.servlet.EmployeeLoginServlet;
-import com.joshcummings.codeplay.terracotta.servlet.LoginServlet;
 import com.joshcummings.codeplay.terracotta.servlet.LogoutServlet;
 import com.joshcummings.codeplay.terracotta.servlet.MakeDepositServlet;
 import com.joshcummings.codeplay.terracotta.servlet.MessagesServlet;
+import com.joshcummings.codeplay.terracotta.servlet.PasswordUpgradeServlet;
 import com.joshcummings.codeplay.terracotta.servlet.RegisterServlet;
 import com.joshcummings.codeplay.terracotta.servlet.SendResponseServlet;
 import com.joshcummings.codeplay.terracotta.servlet.SiteStatisticsServlet;
 import com.joshcummings.codeplay.terracotta.servlet.TransferMoneyServlet;
+
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -42,13 +50,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.Servlet;
-import javax.servlet.annotation.MultipartConfig;
-import java.util.Arrays;
 
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
@@ -87,11 +88,6 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Bean
 	public ServletRegistrationBean employeeLoginServlet(UserService userService) {
 		return this.servlet(new EmployeeLoginServlet(userService), "/employeeLogin");
-	}
-
-	@Bean
-	public ServletRegistrationBean loginServlet(AccountService accountService, UserService userService)  {
-		return this.servlet(new LoginServlet(accountService, userService), "/login");
 	}
 
 	@Bean
@@ -135,6 +131,14 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Bean
 	public ServletRegistrationBean transferMoneyServlet(AccountService accountService) {
 		return this.servlet(new TransferMoneyServlet(accountService), "/transferMoney");
+	}
+
+	/**
+	 * Only exposed as a servlet for demo purposes since Terracotta uses an in-memory database
+	 */
+	@Bean
+	public ServletRegistrationBean passwordUpgradeServlet() {
+		return this.servlet(new PasswordUpgradeServlet(), "/passwordUpgradeDemo");
 	}
 
 	@Override
