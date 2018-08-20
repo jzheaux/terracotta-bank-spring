@@ -11,7 +11,7 @@ buildscript {
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("me.champeau.gradle:jmh-gradle-plugin:0.4.5")
+        classpath("me.champeau.gradle:jmh-gradle-plugin:0.4.7")
 	}
 }
 
@@ -43,6 +43,9 @@ dependencies {
 	compile('javax.servlet:jstl')
 	compile('org.apache.tomcat.embed:tomcat-embed-jasper')
 
+	testCompile('org.springframework:spring-beans')
+	testCompile('org.springframework:spring-context')
+	testCompile('org.springframework:spring-core')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')
 
