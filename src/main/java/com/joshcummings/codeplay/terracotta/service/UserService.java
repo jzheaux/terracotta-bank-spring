@@ -63,4 +63,8 @@ public class UserService extends ServiceSupport {
 	public Integer count() {
 		return super.count("users");
 	}
+
+	public void updateUserPassword(User user) {
+		runUpdate("UPDATE users SET password = '" + user.getPassword() + "' WHERE id = '" + user.getId() + "'");
+	}
 }
