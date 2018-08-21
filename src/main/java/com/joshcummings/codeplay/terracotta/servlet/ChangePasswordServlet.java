@@ -95,6 +95,6 @@ public class ChangePasswordServlet extends HttpServlet {
 
 		response.setStatus(400);
 		request.setAttribute("message", error);
-		request.getRequestDispatcher("/webapp/WEB-INF/json/error.jsp").forward(request, response);
+		request.getRequestDispatcher("/WEB-INF/json/error.jsp").forward(request, response);
 	}
 }
