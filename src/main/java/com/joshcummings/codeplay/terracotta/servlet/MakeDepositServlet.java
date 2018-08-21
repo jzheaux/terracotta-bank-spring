@@ -99,7 +99,7 @@ public class MakeDepositServlet extends HttpServlet {
 		{
 			response.setStatus(400);
 			request.setAttribute("message", errors.stream().findFirst().get());
-			request.getRequestDispatcher("/webapp/WEB-INF/json/error.jsp").forward(request, response);
+			request.getRequestDispatcher("/WEB-INF/json/error.jsp").forward(request, response);
 		}
 	}
 
