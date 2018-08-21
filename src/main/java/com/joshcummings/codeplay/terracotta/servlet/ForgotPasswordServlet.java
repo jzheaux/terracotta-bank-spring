@@ -55,14 +55,22 @@ public class ForgotPasswordServlet extends HttpServlet {
 		User user = this.userService.findByUsername(username);
 
 		if ( user == null ) {
-			request.setAttribute("forgotPasswordErrorMessage", "The user entered (" + username + ") does not exist.");
+			send(request, response, "The user entered (" + username + ") does not exist.", 400);
 		} else {
-			request.setAttribute("forgotPasswordErrorMessage", "The password is (" + user.getPassword() + ")");
+			send(request, response, "Your password is (" + user.getPassword() + ")", 200);
 		}
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		super.doGet(request, response);
+	}
+
+	private void send(HttpServletRequest request, HttpServletResponse response, String error, int status)
+			throws ServletException, IOException {
+
+		response.setStatus(status);
+		request.setAttribute("message", error);
+		request.getRequestDispatcher("/WEB-INF/json/error.jsp").forward(request, response);
 	}
 }

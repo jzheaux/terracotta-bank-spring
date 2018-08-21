@@ -197,6 +197,72 @@ img:hover {
   border-color: transparent;
 }
 
+/* account section */
+#account .form-control {
+  border: 2px solid #444;
+  border-radius: 0px;
+  box-shadow: none;
+  font-family: 'Raleway', sans-serif;
+  margin-bottom: 20px;
+}
+#account .form-control:focus {
+  opacity: 0.8;
+  position: relative;
+  bottom: 10px;
+}
+#account input {
+  height: 50px;
+}
+#account label {
+  font-size: 16px;
+  font-family: 'Raleway', sans-serif;
+}
+#account input[type="submit"] {
+  background: #444;
+  color: #ffffff;
+  transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -ms-transition: all 0.4s ease-in-out;
+}
+#account input[type="submit"]:hover {
+  background: #f2af00;
+  border-color: transparent;
+}
+
+/* forgotPassword section */
+#forgotPassword .form-control {
+  border: 2px solid #444;
+  border-radius: 0px;
+  box-shadow: none;
+  font-family: 'Raleway', sans-serif;
+  margin-bottom: 20px;
+}
+#forgotPassword .form-control:focus {
+  opacity: 0.8;
+  position: relative;
+  bottom: 10px;
+}
+#forgotPassword input {
+  height: 50px;
+}
+#forgotPassword label {
+  font-size: 16px;
+  font-family: 'Raleway', sans-serif;
+}
+#forgotPassword input[type="submit"] {
+  background: #444;
+  color: #ffffff;
+  transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -ms-transition: all 0.4s ease-in-out;
+}
+#forgotPassword input[type="submit"]:hover {
+  background: #f2af00;
+  border-color: transparent;
+}
+
 /* service section */
 #service {
   padding-top: 100px;

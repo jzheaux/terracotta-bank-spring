@@ -73,15 +73,13 @@ public class ChangePasswordServlet extends HttpServlet {
 						loggedInUser.getName(),
 						loggedInUser.getEmail());
 				this.userService.updateUserPassword(user);
-				request.setAttribute("changePasswordErrorMessage", "Password Successfully Changed");
 			} else {
-				request.setAttribute("changePasswordErrorMessage",
+				sendError(request, response,
 						"Your password (" + password + ") isn't strong enough: <br/>" +
 								evaluation.getDetails().stream().collect(Collectors.joining("<br/>")));
-				request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
 			}
 		} else {
-			request.setAttribute("changePasswordErrorMessage",
+			sendError(request, response,
 					"Your password (" + password + ") is not equal to your verification password (" +
 					verifyPassword + ")");
 		}
@@ -90,5 +88,13 @@ public class ChangePasswordServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		super.doGet(request, response);
+	}
+
+	private void sendError(HttpServletRequest request, HttpServletResponse response, String error)
+			throws ServletException, IOException {
+
+		response.setStatus(400);
+		request.setAttribute("message", error);
+		request.getRequestDispatcher("/webapp/WEB-INF/json/error.jsp").forward(request, response);
 	}
 }

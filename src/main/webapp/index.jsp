@@ -131,6 +131,51 @@ http://www.tooplate.com/view/2080-minimax
 				</div>
 			</div>
 		</div>
+
+		<!-- divider section -->
+		<div class="container">
+			<div class="row">
+				<div class="col-md-1 col-sm-1"></div>
+				<div class="col-md-10 col-sm-10">
+					<hr>
+				</div>
+				<div class="col-md-1 col-sm-1"></div>
+			</div>
+		</div>
+
+		<!-- forgot password section -->
+		<div id="forgotPassword">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 col-sm-12">
+						<i class="fa fa-group"></i>
+						<h3>Forgot Your Password</h3>
+						<p>We can help!</p>
+						<form id="restore" action="#" method="post" role="form">
+							<div class="col-md-12 col-sm-12 messages"></div>
+							<div class="col-md-6 col-sm-6">
+								<input name="forgotPasswordUsername" type="text" class="form-control" id="forgotPasswordUsername" placeholder="Username">
+						  	</div>
+						  	<input type="hidden" name="csrfToken" value="${csrfToken}"/>
+							<div class="col-md-2 col-sm-2">
+								<input name="forgotPassword" type="submit" class="form-control" value="RESTORE">
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+        <!-- divider section -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-1 col-sm-1"></div>
+                <div class="col-md-10 col-sm-10">
+                    <hr>
+                </div>
+                <div class="col-md-1 col-sm-1"></div>
+            </div>
+        </div>
 	</c:when>
 	<c:otherwise>
 		<!-- service section -->
@@ -210,6 +255,49 @@ http://www.tooplate.com/view/2080-minimax
 				</div>
 			</div>
 		</div>
+
+
+		<!-- divider section -->
+		<div class="container">
+			<div class="row">
+				<div class="col-md-1 col-sm-1"></div>
+				<div class="col-md-10 col-sm-10">
+					<hr>
+				</div>
+				<div class="col-md-1 col-sm-1"></div>
+			</div>
+		</div>
+
+		<!-- account section -->
+        <div id="account">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12">
+                        <h2>Account</h2>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <i class="fa fa-group"></i>
+                        <h3>Change Your Password</h3>
+                        <p>Make sure it's a good one</p>
+                        <form id="change" action="#" method="post" role="form">
+                            <div class="col-md-12 col-sm-12 messages"></div>
+                            <div class="col-md-6 col-sm-6">
+                                <input name="changePassword" type="password" class="form-control" id="changePassword" placeholder="Password">
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <input name="verifyChangePassword" type="password" class="form-control" id="verifyPassword" placeholder="Verify Password">
+                            </div>
+                            <input type="hidden" name="csrfToken" value="${csrfToken}"/>
+                            <div class="col-md-6 col-sm-6"></div>
+                            <div class="col-md-6 col-sm-6">
+                                <input name="change" type="submit" class="form-control" value="CHANGE">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6 col-sm-6"/>
+                </div>
+            </div>
+        </div>
 		
 		<!-- divider section -->
 		<div class="container">

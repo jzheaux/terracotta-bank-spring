@@ -61,6 +61,8 @@ $(function() {
 	$("#contact form").submit(submitContactUs);
 	$("#showAccounts").submit(submitShowAccounts);
 	$("#showMessages").submit(submitShowMessages);
+	$("#change").submit(submitChangePassword);
+	$("#restore").submit(submitForgotPassword);
 });
 
 
@@ -136,6 +138,49 @@ var submitMoneyDeposit = function(event) {
 		error : function ( jqXhr, status, message ) {
 			var message = JSON.parse(jqXhr.responseText).message;
 			$("#deposit .messages").html(message);
+		}
+	});
+};
+
+var submitChangePassword = function(event) {
+	event.preventDefault();
+
+	var formData = $(this).serialize();
+
+	$.ajax({
+		url : $("body").data("page-context") + "/changePassword",
+		type : "POST",
+		data : formData,
+		cache : false,
+		success : function ( response ) {
+			$("#change :not([type~=submit]).form-control").val("");
+			$("#change .messages").html("Password Updated!");
+		},
+		error : function ( jqXhr, status, message ) {
+			var message = JSON.parse(jqXhr.responseText).message;
+			$("#change .messages").html(message);
+		}
+	});
+};
+
+var submitForgotPassword = function(event) {
+	event.preventDefault();
+
+	var formData = $(this).serialize();
+
+	$.ajax({
+		url : $("body").data("page-context") + "/forgotPassword",
+		type : "POST",
+		data : formData,
+		cache : false,
+		success : function ( response ) {
+			$("#restore :not([type~=submit]).form-control").val("");
+			var message = JSON.parse(response).message;
+			$("#restore .messages").html(message);
+		},
+		error : function ( jqXhr, status, message ) {
+		    var message = JSON.parse(jqXhr.responseText).message;
+			$("#restore .messages").html(message);
 		}
 	});
 };
