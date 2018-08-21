@@ -277,22 +277,7 @@ http://www.tooplate.com/view/2080-minimax
                     </div>
                     <div class="col-md-6 col-sm-6">
                         <i class="fa fa-group"></i>
-                        <h3>Change Your Password</h3>
-                        <p>Make sure it's a good one</p>
-                        <form id="change" action="#" method="post" role="form">
-                            <div class="col-md-12 col-sm-12 messages"></div>
-                            <div class="col-md-6 col-sm-6">
-                                <input name="changePassword" type="password" class="form-control" id="changePassword" placeholder="Password">
-                            </div>
-                            <div class="col-md-6 col-sm-6">
-                                <input name="verifyChangePassword" type="password" class="form-control" id="verifyPassword" placeholder="Verify Password">
-                            </div>
-                            <input type="hidden" name="csrfToken" value="${csrfToken}"/>
-                            <div class="col-md-6 col-sm-6"></div>
-                            <div class="col-md-6 col-sm-6">
-                                <input name="change" type="submit" class="form-control" value="CHANGE">
-                            </div>
-                        </form>
+                        <input type="submit" class="form-control" onclick="location.href='/changePassword'" value="Change Password"/>
                     </div>
                     <div class="col-md-6 col-sm-6"/>
                 </div>

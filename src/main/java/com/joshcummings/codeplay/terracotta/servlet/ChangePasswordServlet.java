@@ -22,7 +22,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.joshcummings.codeplay.terracotta.model.Transaction;
 import com.joshcummings.codeplay.terracotta.model.User;
+import com.joshcummings.codeplay.terracotta.service.TransactionService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 import com.joshcummings.codeplay.terracotta.service.passwords.Evaluation;
 import com.joshcummings.codeplay.terracotta.service.passwords.PasswordEntropyEvaluator;
@@ -55,6 +57,12 @@ public class ChangePasswordServlet extends HttpServlet {
 		User loggedInUser = (User) request.getAttribute("authenticatedUser");
 
 		if (loggedInUser != null) {
+			String oldPassword = request.getParameter("oldPassword");
+			loggedInUser = this.userService.findByUsernameAndPassword(loggedInUser.getUsername(), oldPassword);
+			if (loggedInUser == null) {
+				sendError(request, response, "Your old password is different from what you entered.");
+				return;
+			}
 			changePassword(request, response, loggedInUser);
 			return;
 		}
@@ -64,7 +72,14 @@ public class ChangePasswordServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
+		User loggedInUser = (User)request.getAttribute("authenticatedUser");
+
+		if ( loggedInUser != null ) {
+			request.getRequestDispatcher("/WEB-INF/passwordupdate.jsp").forward(request, response);
+			return;
+		}
+
+		response.setStatus(401);
 	}
 
 	private boolean changePassword(HttpServletRequest request, HttpServletResponse response, User loggedInUser)
