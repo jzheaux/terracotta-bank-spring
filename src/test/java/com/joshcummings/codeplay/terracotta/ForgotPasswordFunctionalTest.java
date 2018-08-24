@@ -23,19 +23,36 @@ import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.TransactionService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.apache.http.client.methods.RequestBuilder.get;
 import static org.apache.http.client.methods.RequestBuilder.post;
 
 public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
+	@BeforeMethod
+	public void createUser() {
+		UserService userService = this.context.getBean(UserService.class);
+		User user = new User("0", "user", "P@ssword!", "User", "user@username");
+		userService.addUser(user);
+	}
+
+	@AfterMethod
+	public void removeUser() {
+		UserService userService = this.context.getBean(UserService.class);
+		User user = userService.findByUsername("user");
+		TransactionService transactionService = this.context.getBean(TransactionService.class);
+		transactionService.endAllTransactionsForUser(user);
+		userService.removeUser(user.getUsername());
+	}
 
 	@Test
 	public void testForgotPasswordForEnumeration() {
 		String validAccount = http.postForContent(post("/forgotPassword")
-			.addParameter("forgotPasswordAccount", "john.coltraine"));
+			.addParameter("forgotPasswordAccount", "user"));
 		String invalidAccount = http.postForContent(post("/forgotPassword")
-			.addParameter("forgotPasswordAccount", "invalidaccount"));
+			.addParameter("forgotPasswordAccount", "user"));
 
 		Assert.assertEquals(validAccount, invalidAccount);
 	}
@@ -43,30 +60,30 @@ public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 	@Test
 	public void testForgotPasswordDoesNotRevealPassword() {
 		String validAccount = http.postForContent(post("/forgotPassword")
-				.addParameter("forgotPasswordAccount", "john.coltraine"));
+				.addParameter("forgotPasswordAccount", "user"));
 
-		Assert.assertFalse(validAccount.contains("j0hn"));
+		Assert.assertFalse(validAccount.contains("P@ssw0rd!"));
 	}
 
 	@Test
 	public void testForgotPasswordCannotBePerformedWithGet() {
 		int status = http.getForStatus(get("/forgotPassword")
-			.addParameter("forgotPasswordAccount", "john.coltraine"));
+			.addParameter("forgotPasswordAccount", "user"));
 
 		Assert.assertEquals(status, 405);
 	}
 
 	@Test
-	public void testForgotPasswordUsesTransactionalKeys() throws IOException {
+	public void testForgotPasswordUsesTransactionalKeys() {
 		TransactionService transactionService = this.context.getBean(TransactionService.class);
 		UserService userService = this.context.getBean(UserService.class);
-		User user = userService.findByUsername("john.coltraine");
+		User user = userService.findByUsername("user");
 		Collection<Transaction> transactions = transactionService.retrieveTransactionsForUser(user);
 
 		Assert.assertTrue(transactions.isEmpty());
 
 		String content = http.postForContent(post("/forgotPassword")
-					  		.addParameter("forgotPasswordAccount", "john.coltraine"));
+					  		.addParameter("forgotPasswordAccount", "user"));
 
 		transactions = transactionService.retrieveTransactionsForUser(user);
 		Assert.assertTrue(transactions.size() == 1);
