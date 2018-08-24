@@ -22,7 +22,6 @@ import com.joshcummings.codeplay.terracotta.model.Transaction;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.TransactionService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

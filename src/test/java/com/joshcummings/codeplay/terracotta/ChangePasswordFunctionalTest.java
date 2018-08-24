@@ -79,8 +79,6 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 					.addParameter("changePassword", "Longh0rn#p@cifiers!")
 					.addParameter("verifyChangePassword", "Longh0rn#p@cifiers!")) ) {
 
-			Assert.assertEquals(response.getStatusLine().getStatusCode(), 405);
-
 			logout();
 			String content = login("user", "password");
 
@@ -91,6 +89,8 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 
 	@Test
 	public void testChangePasswordAcceptsTransactionKeyAsOldPasswordSubstitute() throws Exception {
+		logout();
+
 		TransactionService transactionService = this.context.getBean(TransactionService.class);
 		UserService userService = this.context.getBean(UserService.class);
 		User user = userService.findByUsername("user");
@@ -99,16 +99,15 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 				transactionService.beginTransaction(user, "change_password");
 
 		try ( CloseableHttpResponse response =
-					  http.getForEntity(get("/changePassword")
+					  http.getForEntity(post("/changePassword")
 							  .addParameter("key", transaction.getKey())
 							  .addParameter("changePassword", "Longh0rn#p@cifiers!")
 							  .addParameter("verifyChangePassword", "Longh0rn#p@cifiers!")) ) {
 
-			logout();
-			String content = login("user", "password");
+			String content = login("user", "Longh0rn#p@cifiers!");
 
-			Assert.assertFalse(content.contains("Welcome, John"));
-			Assert.assertTrue(content.contains("password is incorrect"));
+			Assert.assertTrue(content.contains("Welcome, User"));
+			Assert.assertFalse(content.contains("password is incorrect"));
 		}
 
 		Assert.assertNull(transactionService.retrieveTransaction(transaction.getKey()));
@@ -117,7 +116,7 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 	@Test
 	public void testChangePasswordRejectsInvalidTransactionKey() throws Exception {
 		try ( CloseableHttpResponse response =
-					  http.getForEntity(get("/changePassword")
+					  http.getForEntity(post("/changePassword")
 							  .addParameter("key", "bogus")
 							  .addParameter("changePassword", "Longh0rn#p@cifiers!")
 							  .addParameter("verifyChangePassword", "Longh0rn#p@cifiers!")) ) {
