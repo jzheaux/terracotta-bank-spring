@@ -38,6 +38,7 @@ dependencies {
 	//compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.boot:spring-boot-starter-web')
 
+	compile('com.google.guava:guava:19.0')
 	compile('com.h2database:h2')
 	compile('javax.mail:mail:1.4')
 	compile('javax.servlet:jstl')
