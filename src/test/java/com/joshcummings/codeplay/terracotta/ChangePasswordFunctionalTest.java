@@ -22,9 +22,7 @@ import com.joshcummings.codeplay.terracotta.service.UserService;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import static org.apache.http.client.methods.RequestBuilder.get;
@@ -45,7 +43,7 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 		userService.removeUser("user");
 	}
 
-	@Test
+	@Test(groups = "passwordupdate")
 	public void testChangePasswordRequiresOldPassword() {
 		int status = http.postForStatus(post("/changePassword")
 			.addParameter("changePassword", "Longh0rn#p@cifiers!")
@@ -60,8 +58,8 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 
 		Assert.assertEquals(status, 200);
 	}
-	
-	@Test
+
+	@Test(groups = "passwordupdate")
 	public void testChangePasswordRequiresOldPasswordToBeCorrect() {
 		int status = http.postForStatus(post("/changePassword")
 				.addParameter("oldPassword", "wrongpassword")
@@ -71,7 +69,7 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 		Assert.assertEquals(status, 400);
 	}
 
-	@Test
+	@Test(groups = "passwordupdate")
 	public void testChangePasswordCannotBePerformedWithGet() throws Exception {
 		try ( CloseableHttpResponse response =
 				http.getForEntity(get("/changePassword")
@@ -87,7 +85,7 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 		}
 	}
 
-	@Test
+	@Test(groups = "passwordupdate")
 	public void testChangePasswordAcceptsTransactionKeyAsOldPasswordSubstitute() throws Exception {
 		logout();
 
@@ -113,7 +111,7 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 		Assert.assertNull(transactionService.retrieveTransaction(transaction.getKey()));
 	}
 
-	@Test
+	@Test(groups = "passwordupdate")
 	public void testChangePasswordRejectsInvalidTransactionKey() throws Exception {
 		try ( CloseableHttpResponse response =
 					  http.getForEntity(post("/changePassword")

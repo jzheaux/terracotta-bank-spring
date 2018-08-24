@@ -15,7 +15,6 @@
  */
 package com.joshcummings.codeplay.terracotta;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import com.joshcummings.codeplay.terracotta.model.Transaction;
@@ -47,7 +46,7 @@ public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 		userService.removeUser(user.getUsername());
 	}
 
-	@Test
+	@Test(groups = "passwordupdate")
 	public void testForgotPasswordForEnumeration() {
 		String validAccount = http.postForContent(post("/forgotPassword")
 			.addParameter("forgotPasswordAccount", "user"));
@@ -56,8 +55,8 @@ public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 
 		Assert.assertEquals(validAccount, invalidAccount);
 	}
-	
-	@Test
+
+	@Test(groups = "passwordupdate")
 	public void testForgotPasswordDoesNotRevealPassword() {
 		String validAccount = http.postForContent(post("/forgotPassword")
 				.addParameter("forgotPasswordAccount", "user"));
@@ -65,7 +64,7 @@ public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 		Assert.assertFalse(validAccount.contains("P@ssw0rd!"));
 	}
 
-	@Test
+	@Test(groups = "passwordupdate")
 	public void testForgotPasswordCannotBePerformedWithGet() {
 		int status = http.getForStatus(get("/forgotPassword")
 			.addParameter("forgotPasswordAccount", "user"));
@@ -73,7 +72,7 @@ public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 		Assert.assertEquals(status, 405);
 	}
 
-	@Test
+	@Test(groups = "passwordupdate")
 	public void testForgotPasswordUsesTransactionalKeys() {
 		TransactionService transactionService = this.context.getBean(TransactionService.class);
 		UserService userService = this.context.getBean(UserService.class);
