@@ -80,6 +80,14 @@ public class HttpSupport {
 		}
 	}
 
+	public int postForStatus(RequestBuilder post) {
+		try ( CloseableHttpResponse response = post(post) ) {
+			return response.getStatusLine().getStatusCode();
+		} catch ( IOException e ) {
+			throw new IllegalStateException(e);
+		}
+	}
+
 	public CloseableHttpResponse getForEntity(String path) throws IOException {
 		return getForEntity(RequestBuilder.get(path));
 	}
@@ -88,6 +96,14 @@ public class HttpSupport {
 		get.setUri("http://" + host + get.getUri());
 		get.setConfig(config);
 		return httpclient.execute(get.build());
+	}
+
+	public int getForStatus(RequestBuilder get) {
+		try ( CloseableHttpResponse response = getForEntity(get) ) {
+			return response.getStatusLine().getStatusCode();
+		} catch ( IOException e ) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	public String session() throws IOException {

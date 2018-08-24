@@ -26,7 +26,7 @@ import com.joshcummings.codeplay.terracotta.service.UserService;
 
 /**
  * This servlet makes Terracotta vulnerable to Cross-site Scripting because
- * it fails to validate the {@code forgotPasswordUsername} parameter and
+ * it fails to validate the {@code forgotPasswordAccount} parameter and
  * needlessly reflects it back to the browser.
  *
  * It also leaks password information to the screen. And, further, it gives
@@ -50,7 +50,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = request.getParameter("forgotPasswordUsername");
+		String username = request.getParameter("forgotPasswordAccount");
 
 		User user = this.userService.findByUsername(username);
 
@@ -63,7 +63,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		super.doGet(request, response);
+		doPost(request, response);
 	}
 
 	private void send(HttpServletRequest request, HttpServletResponse response, String error, int status)

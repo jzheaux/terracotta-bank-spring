@@ -67,4 +67,8 @@ public class UserService extends ServiceSupport {
 	public void updateUserPassword(User user) {
 		runUpdate("UPDATE users SET password = '" + user.getPassword() + "' WHERE id = '" + user.getId() + "'");
 	}
+
+	public void removeUser(String username) {
+		runUpdate("DELETE FROM users WHERE username = '" + username + "'");
+	}
 }

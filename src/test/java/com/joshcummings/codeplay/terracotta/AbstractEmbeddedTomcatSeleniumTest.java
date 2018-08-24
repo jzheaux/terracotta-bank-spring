@@ -79,13 +79,15 @@ public class AbstractEmbeddedTomcatSeleniumTest extends AbstractEmbeddedTomcatTe
 		driver.get("http://" + TestConstants.host + page);
 	}
 	
-	protected void login(String username, String password) {
+	protected String login(String username, String password) {
+		super.login(username, password);
 		goToPage("/");
 		driver.findElement(By.name("username")).sendKeys(username);
         driver.findElement(By.name("password")).sendKeys(password);
         driver.findElement(By.name("login")).submit();
         FluentWait<WebDriver> wait = new WebDriverWait(driver, 2).pollingEvery(100, TimeUnit.MILLISECONDS);
         wait.until((Function<WebDriver, Boolean>)driver -> driver.findElement(By.id("service")) != null);
+        return driver.getPageSource();
 	}
 	
 	protected void employeeLogin(String username, String password) {

@@ -54,6 +54,12 @@ public class AbstractEmbeddedTomcatTest {
 		return docker == null ? ( docker = new DockerSupport() ) : docker;
 	}
 
+	protected String login(String username, String password) {
+		return http.postForContent(post("/login")
+				.addParameter("username", username)
+				.addParameter("password", password));
+	}
+
 	protected void logout() {
 		http.postForContent(post("/logout"));
 	}

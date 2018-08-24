@@ -154,7 +154,7 @@ http://www.tooplate.com/view/2080-minimax
 						<form id="restore" action="#" method="post" role="form">
 							<div class="col-md-12 col-sm-12 messages"></div>
 							<div class="col-md-6 col-sm-6">
-								<input name="forgotPasswordUsername" type="text" class="form-control" id="forgotPasswordUsername" placeholder="Username">
+								<input name="forgotPasswordAccount" type="text" class="form-control" id="forgotPasswordAccount" placeholder="Username">
 						  	</div>
 						  	<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 							<div class="col-md-2 col-sm-2">
