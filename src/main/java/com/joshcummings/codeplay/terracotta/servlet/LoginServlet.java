@@ -18,6 +18,7 @@ package com.joshcummings.codeplay.terracotta.servlet;
 import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
+import com.joshcummings.codeplay.terracotta.service.TransactionService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 
 import javax.servlet.ServletException;
@@ -50,10 +51,12 @@ public class LoginServlet extends HttpServlet {
 
 	private AccountService accountService;
 	private UserService userService;
+	private TransactionService transactionService;
 
-	public LoginServlet(AccountService accountService, UserService userService) {
+	public LoginServlet(AccountService accountService, UserService userService, TransactionService transactionService) {
 		this.accountService = accountService;
 		this.userService = userService;
+		this.transactionService = transactionService;
 	}
 
 	protected void doPost(
@@ -73,6 +76,8 @@ public class LoginServlet extends HttpServlet {
 		else
 		{
 			Set<Account> accounts = this.accountService.findByUsername(user.getUsername());
+
+			this.transactionService.endAllTransactionsForUser(user);
 
 			request.getSession().setAttribute("authenticatedUser", user);
 			request.getSession().setAttribute("authenticatedAccounts", accounts);
