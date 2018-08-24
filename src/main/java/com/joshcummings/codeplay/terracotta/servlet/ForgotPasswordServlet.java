@@ -16,12 +16,16 @@
 package com.joshcummings.codeplay.terracotta.servlet;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.joshcummings.codeplay.terracotta.model.Transaction;
 import com.joshcummings.codeplay.terracotta.model.User;
+import com.joshcummings.codeplay.terracotta.service.EmailService;
+import com.joshcummings.codeplay.terracotta.service.TransactionService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 
 /**
@@ -43,9 +47,17 @@ import com.joshcummings.codeplay.terracotta.service.UserService;
  */
 public class ForgotPasswordServlet extends HttpServlet {
 	private final UserService userService;
+	private final EmailService emailService;
+	private final TransactionService transactionService;
 
-	public ForgotPasswordServlet(UserService userService) {
+	public ForgotPasswordServlet(
+			UserService userService,
+			EmailService emailService,
+			TransactionService transactionService) {
+
 		this.userService = userService;
+		this.emailService = emailService;
+		this.transactionService = transactionService;
 	}
 
 	@Override
@@ -55,15 +67,18 @@ public class ForgotPasswordServlet extends HttpServlet {
 		User user = this.userService.findByUsername(username);
 
 		if ( user == null ) {
-			send(request, response, "The user entered (" + username + ") does not exist.", 400);
+			send(request, response, "We've sent password reset instructions to your account.", 200);
 		} else {
-			send(request, response, "Your password is (" + user.getPassword() + ")", 200);
+			Transaction changePassword = this.transactionService.beginTransaction(user, "change_password");
+			this.emailService.sendMessage(user.getEmail(), "Password Change Instructions",
+					"You are receiving this because there was a password change request made to your account.\n\n" +
+					"If you didn't request this change, please contact Terracotta Bank immediately.\n\n"+
+					"Otherwise, please click this link to be directed to the password change form:\n\n" +
+					"<a href='http://localhost:8080/changePassword?key=" + changePassword.getKey() + "'>" +
+							"Change Your Password" +
+					"</a>.");
+			send(request, response, "We've sent password reset instructions to your account.", 200);
 		}
-	}
-
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
 	}
 
 	private void send(HttpServletRequest request, HttpServletResponse response, String error, int status)

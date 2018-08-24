@@ -46,10 +46,15 @@ import com.joshcummings.codeplay.terracotta.service.passwords.WeakPasswordEntrop
  */
 public class ChangePasswordServlet extends HttpServlet {
 	private final UserService userService;
+	private final TransactionService transactionService;
 	private final PasswordEntropyEvaluator evaluator = new WeakPasswordEntropyEvaluator();
 
-	public ChangePasswordServlet(UserService userService) {
+	public ChangePasswordServlet(
+			UserService userService,
+			TransactionService transactionService) {
+
 		this.userService = userService;
+		this.transactionService = transactionService;
 	}
 
 	@Override
@@ -67,6 +72,15 @@ public class ChangePasswordServlet extends HttpServlet {
 			return;
 		}
 
+		Transaction changePassword = getTransaction(request);
+		if (changePassword != null) {
+			loggedInUser = changePassword.getUser();
+			if ( changePassword(request, response, loggedInUser) ) {
+				this.transactionService.endTransaction(changePassword.getKey());
+			}
+			return;
+		}
+
 		response.setStatus(401);
 	}
 
@@ -75,6 +89,13 @@ public class ChangePasswordServlet extends HttpServlet {
 		User loggedInUser = (User)request.getAttribute("authenticatedUser");
 
 		if ( loggedInUser != null ) {
+			request.getRequestDispatcher("/WEB-INF/passwordupdate.jsp").forward(request, response);
+			return;
+		}
+
+		Transaction changePassword = getTransaction(request);
+		if ( changePassword != null ) {
+			request.setAttribute("key", changePassword.getKey());
 			request.getRequestDispatcher("/WEB-INF/passwordupdate.jsp").forward(request, response);
 			return;
 		}
@@ -112,6 +133,18 @@ public class ChangePasswordServlet extends HttpServlet {
 							verifyPassword + ")");
 			return false;
 		}
+	}
+
+	private Transaction getTransaction(HttpServletRequest request) {
+		String key = request.getParameter("key");
+		if ( key != null ) {
+			Transaction changePassword = this.transactionService.retrieveTransaction(key);
+			if ( changePassword != null && "change_password".equals(changePassword.getAction()) ) {
+				return changePassword;
+			}
+		}
+
+		return null;
 	}
 
 	private void sendError(HttpServletRequest request, HttpServletResponse response, String error)

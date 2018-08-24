@@ -21,6 +21,7 @@ import com.joshcummings.codeplay.terracotta.service.AccountService;
 import com.joshcummings.codeplay.terracotta.service.CheckService;
 import com.joshcummings.codeplay.terracotta.service.EmailService;
 import com.joshcummings.codeplay.terracotta.service.MessageService;
+import com.joshcummings.codeplay.terracotta.service.TransactionService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 import com.joshcummings.codeplay.terracotta.servlet.AccountServlet;
 import com.joshcummings.codeplay.terracotta.servlet.AdminLoginServlet;
@@ -78,8 +79,8 @@ public class WebConfiguration implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public ServletRegistrationBean changePasswordServlet(UserService userService) {
-		return this.servlet(new ChangePasswordServlet(userService), "/changePassword");
+	public ServletRegistrationBean changePasswordServlet(UserService userService, TransactionService transactionService) {
+		return this.servlet(new ChangePasswordServlet(userService, transactionService), "/changePassword");
 	}
 
 	@Bean
@@ -98,8 +99,11 @@ public class WebConfiguration implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public ServletRegistrationBean forgotPasswordServlet(UserService userService) {
-		return this.servlet(new ForgotPasswordServlet(userService), "/forgotPassword");
+	public ServletRegistrationBean forgotPasswordServlet(UserService userService,
+			EmailService emailService,
+			TransactionService transactionService) {
+
+		return this.servlet(new ForgotPasswordServlet(userService, emailService, transactionService), "/forgotPassword");
 	}
 
 	@Bean

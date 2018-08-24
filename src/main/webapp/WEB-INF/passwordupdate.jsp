@@ -73,9 +73,16 @@ http://www.tooplate.com/view/2080-minimax
                 <p>Make sure it's a good one</p>
                 <form id="change" action="#" method="post" role="form">
                     <div class="col-md-12 col-sm-12 messages"></div>
-                    <div class="col-md-6 col-sm-6">
-                        <input name="oldPassword" type="password" class="form-control" id="oldPassword" placeholder="Old Password">
-                    </div>
+                    <c:choose>
+                        <c:when test="${not empty key}">
+                            <input type="hidden" name="key" value="${key}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="col-md-6 col-sm-6">
+                                <input name="oldPassword" type="password" class="form-control" id="oldPassword" placeholder="Old Password">
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                     <div class="col-md-6 col-sm-6">
                         <input name="changePassword" type="password" class="form-control" id="password" placeholder="Password">
                     </div>

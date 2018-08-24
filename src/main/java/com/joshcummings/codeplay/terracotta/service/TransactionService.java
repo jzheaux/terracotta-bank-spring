@@ -74,7 +74,7 @@ public class TransactionService {
 		Collection<Transaction> userTransactions = new ArrayList<>();
 		for ( Map.Entry<String, Transaction> entry : this.transactions.asMap().entrySet() ) {
 			User transactionUser = this.transactions.getIfPresent(entry.getKey()).getUser();
-			if ( transactionUser.equals(user.getId()) ) {
+			if ( transactionUser.getId().equals(user.getId()) ) {
 				userTransactions.add(entry.getValue());
 			}
 		}
@@ -84,7 +84,7 @@ public class TransactionService {
 	public void endAllTransactionsForUser(User user) {
 		for ( Map.Entry<String, Transaction> entry : this.transactions.asMap().entrySet() ) {
 			User transactionUser = retrieveTransaction(entry.getKey()).getUser();
-			if ( transactionUser.equals(user.getId()) ) {
+			if ( transactionUser.getId().equals(user.getId()) ) {
 				endTransaction(entry.getKey());
 			}
 		}
