@@ -27,6 +27,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class is vulnerable to information leakage because
  * it places credentials inside source code.
@@ -35,6 +38,8 @@ import java.util.Properties;
  */
 @Service
 public class EmailService {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	private String from = "no-reply-terracotta-bank@mailinator.com";
 	private String host = "in-v3.mailjet.com";
 	private Properties properties = System.getProperties();
@@ -70,7 +75,7 @@ public class EmailService {
 			message.setContent(content, "text/html; charset=utf-8");
 			Transport.send(message);
 		} catch (MessagingException mex) {
-			throw new IllegalStateException(mex);
+			this.logger.error("Failed to send message", mex);
 		}
 	}
 }
