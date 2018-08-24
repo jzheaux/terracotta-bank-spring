@@ -54,17 +54,28 @@ public class ChangePasswordServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		User loggedInUser = (User) request.getAttribute("authenticatedUser");
 
-		if ( loggedInUser == null ) {
-			response.setStatus(401);
+		if (loggedInUser != null) {
+			changePassword(request, response, loggedInUser);
 			return;
 		}
+
+		response.setStatus(401);
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	private boolean changePassword(HttpServletRequest request, HttpServletResponse response, User loggedInUser)
+			throws ServletException, IOException {
 
 		String password = request.getParameter("changePassword");
 		String verifyPassword = request.getParameter("verifyChangePassword");
 
 		if ( password.equals(verifyPassword) ) {
 			Evaluation evaluation =
-				this.evaluator.evaluate(password, loggedInUser);
+					this.evaluator.evaluate(password, loggedInUser);
 
 			if ( evaluation.isSuccess() ) {
 				User user = new User(loggedInUser.getId(),
@@ -73,21 +84,19 @@ public class ChangePasswordServlet extends HttpServlet {
 						loggedInUser.getName(),
 						loggedInUser.getEmail());
 				this.userService.updateUserPassword(user);
+				return true;
 			} else {
 				sendError(request, response,
 						"Your password (" + password + ") isn't strong enough: <br/>" +
 								evaluation.getDetails().stream().collect(Collectors.joining("<br/>")));
+				return false;
 			}
 		} else {
 			sendError(request, response,
 					"Your password (" + password + ") is not equal to your verification password (" +
-					verifyPassword + ")");
+							verifyPassword + ")");
+			return false;
 		}
-	}
-
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
 	}
 
 	private void sendError(HttpServletRequest request, HttpServletResponse response, String error)
