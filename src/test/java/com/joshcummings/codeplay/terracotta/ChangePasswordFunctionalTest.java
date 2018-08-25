@@ -19,6 +19,8 @@ import com.joshcummings.codeplay.terracotta.model.Transaction;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.TransactionService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
+import com.joshcummings.codeplay.terracotta.testng.HttpSupport;
+import com.joshcummings.codeplay.terracotta.testng.TomcatSupport;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -28,23 +30,26 @@ import org.testng.annotations.Test;
 import static org.apache.http.client.methods.RequestBuilder.get;
 import static org.apache.http.client.methods.RequestBuilder.post;
 
-public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
+public class ChangePasswordFunctionalTest {
+	TomcatSupport tomcat = new TomcatSupport();
+	HttpSupport http = new HttpSupport();
+
 	@BeforeMethod(alwaysRun = true)
 	public void doLogin() {
-		UserService userService = this.context.getBean(UserService.class);
+		this.tomcat.startContainer();
+		UserService userService = this.tomcat.getContext().getBean(UserService.class);
 		userService.addUser(new User("0", "user", "password", "User", "user@username"));
-		login("user", "password");
 	}
 
 	@AfterMethod(alwaysRun = true)
 	public void doLogout() {
-		logout();
-		UserService userService = this.context.getBean(UserService.class);
-		userService.removeUser("user");
+		this.tomcat.stopContainer();
 	}
 
 	@Test(groups = "passwordupdate")
 	public void testChangePasswordRequiresOldPassword() {
+		this.http.login("user", "password");
+
 		int status = http.postForStatus(post("/changePassword")
 			.addParameter("changePassword", "Longh0rn#p@cifiers!")
 			.addParameter("verifyChangePassword", "Longh0rn#p@cifiers!"));
@@ -61,6 +66,8 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 
 	@Test(groups = "passwordupdate")
 	public void testChangePasswordRequiresOldPasswordToBeCorrect() {
+		this.http.login("user", "password");
+
 		int status = http.postForStatus(post("/changePassword")
 				.addParameter("oldPassword", "wrongpassword")
 				.addParameter("changePassword", "Longh0rn#p@cifiers!")
@@ -71,14 +78,16 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 
 	@Test(groups = "passwordupdate")
 	public void testChangePasswordCannotBePerformedWithGet() throws Exception {
+		this.http.login("user", "password");
+
 		try ( CloseableHttpResponse response =
 				http.getForEntity(get("/changePassword")
 					.addParameter("oldPassword", "password")
 					.addParameter("changePassword", "Longh0rn#p@cifiers!")
 					.addParameter("verifyChangePassword", "Longh0rn#p@cifiers!")) ) {
 
-			logout();
-			String content = login("user", "password");
+			http.logout();
+			String content = http.login("user", "password");
 
 			Assert.assertTrue(content.contains("Welcome, User"));
 			Assert.assertFalse(content.contains("password is incorrect"));
@@ -87,10 +96,8 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 
 	@Test(groups = "passwordupdate")
 	public void testChangePasswordAcceptsTransactionKeyAsOldPasswordSubstitute() throws Exception {
-		logout();
-
-		TransactionService transactionService = this.context.getBean(TransactionService.class);
-		UserService userService = this.context.getBean(UserService.class);
+		TransactionService transactionService = this.tomcat.getContext().getBean(TransactionService.class);
+		UserService userService = this.tomcat.getContext().getBean(UserService.class);
 		User user = userService.findByUsername("user");
 
 		Transaction transaction =
@@ -102,7 +109,7 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 							  .addParameter("changePassword", "Longh0rn#p@cifiers!")
 							  .addParameter("verifyChangePassword", "Longh0rn#p@cifiers!")) ) {
 
-			String content = login("user", "Longh0rn#p@cifiers!");
+			String content = http.login("user", "Longh0rn#p@cifiers!");
 
 			Assert.assertTrue(content.contains("Welcome, User"));
 			Assert.assertFalse(content.contains("password is incorrect"));
@@ -113,14 +120,16 @@ public class ChangePasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 
 	@Test(groups = "passwordupdate")
 	public void testChangePasswordRejectsInvalidTransactionKey() throws Exception {
+		this.http.login("user", "password");
+
 		try ( CloseableHttpResponse response =
 					  http.getForEntity(post("/changePassword")
 							  .addParameter("key", "bogus")
 							  .addParameter("changePassword", "Longh0rn#p@cifiers!")
 							  .addParameter("verifyChangePassword", "Longh0rn#p@cifiers!")) ) {
 
-			logout();
-			String content = login("user", "password");
+			http.logout();
+			String content = http.login("user", "password");
 
 			Assert.assertTrue(content.contains("Welcome, User"));
 			Assert.assertFalse(content.contains("password is incorrect"));

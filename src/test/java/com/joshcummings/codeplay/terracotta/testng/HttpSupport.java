@@ -121,4 +121,14 @@ public class HttpSupport {
 
 		return null;
 	}
+
+	public String login(String username, String password) {
+		return postForContent(RequestBuilder.post("/login")
+				.addParameter("username", username)
+				.addParameter("password", password));
+	}
+
+	public String logout() {
+		return postForContent(RequestBuilder.post("/logout"));
+	}
 }

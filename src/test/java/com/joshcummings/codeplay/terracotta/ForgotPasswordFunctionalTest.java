@@ -21,6 +21,8 @@ import com.joshcummings.codeplay.terracotta.model.Transaction;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.TransactionService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
+import com.joshcummings.codeplay.terracotta.testng.HttpSupport;
+import com.joshcummings.codeplay.terracotta.testng.TomcatSupport;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -29,21 +31,21 @@ import org.testng.annotations.Test;
 import static org.apache.http.client.methods.RequestBuilder.get;
 import static org.apache.http.client.methods.RequestBuilder.post;
 
-public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
-	@BeforeMethod
+public class ForgotPasswordFunctionalTest {
+	TomcatSupport tomcat = new TomcatSupport();
+	HttpSupport http = new HttpSupport();
+
+	@BeforeMethod(alwaysRun = true)
 	public void createUser() {
-		UserService userService = this.context.getBean(UserService.class);
+		this.tomcat.startContainer();
+		UserService userService = this.tomcat.getContext().getBean(UserService.class);
 		User user = new User("0", "user", "P@ssw0rd!", "User", "user@username");
 		userService.addUser(user);
 	}
 
-	@AfterMethod
+	@AfterMethod(alwaysRun = true)
 	public void removeUser() {
-		UserService userService = this.context.getBean(UserService.class);
-		User user = userService.findByUsername("user");
-		TransactionService transactionService = this.context.getBean(TransactionService.class);
-		transactionService.endAllTransactionsForUser(user);
-		userService.removeUser(user.getUsername());
+		this.tomcat.stopContainer();
 	}
 
 	@Test(groups = "passwordupdate")
@@ -74,8 +76,8 @@ public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 
 	@Test(groups = "passwordupdate")
 	public void testForgotPasswordUsesTransactionalKeys() {
-		TransactionService transactionService = this.context.getBean(TransactionService.class);
-		UserService userService = this.context.getBean(UserService.class);
+		TransactionService transactionService = this.tomcat.getContext().getBean(TransactionService.class);
+		UserService userService = this.tomcat.getContext().getBean(UserService.class);
 		User user = userService.findByUsername("user");
 		Collection<Transaction> transactions = transactionService.retrieveTransactionsForUser(user);
 

@@ -6,14 +6,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 public class TomcatSupport {
-	private static ConfigurableApplicationContext context;
+	private ConfigurableApplicationContext context;
 
-	public ApplicationContext startContainer() throws Exception {
-		this.context = SpringApplication.run(Mainer.class);
-		return this.context;
+	public ApplicationContext startContainer() {
+		context = SpringApplication.run(Mainer.class);
+		return context;
 	}
 	
-	public void stopContainer() throws Exception {
-		this.context.close();
+	public void stopContainer() {
+		context.close();
+	}
+
+	public ApplicationContext getContext() {
+		return context;
 	}
 }
