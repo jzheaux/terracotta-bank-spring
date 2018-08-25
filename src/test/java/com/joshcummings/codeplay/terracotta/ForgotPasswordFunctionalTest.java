@@ -33,7 +33,7 @@ public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 	@BeforeMethod
 	public void createUser() {
 		UserService userService = this.context.getBean(UserService.class);
-		User user = new User("0", "user", "P@ssword!", "User", "user@username");
+		User user = new User("0", "user", "P@ssw0rd!", "User", "user@username");
 		userService.addUser(user);
 	}
 
@@ -51,7 +51,7 @@ public class ForgotPasswordFunctionalTest extends AbstractEmbeddedTomcatTest {
 		String validAccount = http.postForContent(post("/forgotPassword")
 			.addParameter("forgotPasswordAccount", "user"));
 		String invalidAccount = http.postForContent(post("/forgotPassword")
-			.addParameter("forgotPasswordAccount", "user"));
+			.addParameter("forgotPasswordAccount", "invaliduser"));
 
 		Assert.assertEquals(validAccount, invalidAccount);
 	}
