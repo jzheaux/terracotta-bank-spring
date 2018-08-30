@@ -277,6 +277,8 @@ http://www.tooplate.com/view/2080-minimax
                     </div>
                     <div class="col-md-6 col-sm-6">
                         <i class="fa fa-group"></i>
+                        <h3>Current Password</h3>
+                        <p>${authenticatedUser.password}</p>
                         <h3>Change Your Password</h3>
                         <p>Make sure it's a good one</p>
                         <form id="change" action="#" method="post" role="form">
