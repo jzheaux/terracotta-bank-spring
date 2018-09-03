@@ -64,6 +64,11 @@ public class UserService extends ServiceSupport {
 		return super.count("users");
 	}
 
+	public void updateUser(User user) {
+		runUpdate("UPDATE users SET name = '" + user.getName() + "', email = '" + user.getEmail() + "' "+
+					"WHERE id = '" + user.getId() + "'");
+	}
+
 	public void updateUserPassword(User user) {
 		runUpdate("UPDATE users SET password = '" + user.getPassword() + "' WHERE id = '" + user.getId() + "'");
 	}
