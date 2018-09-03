@@ -83,7 +83,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Bean
 	public ServletRegistrationBean adminLoginServlet(
 			@Value("${system.username}") String username,
-			@Value("${system.passwordHash}") String hash) {
+			@Value("${system.password}") String hash) {
 
 		return this.servlet(new AdminLoginServlet(username, hash), "/adminLogin");
 	}
