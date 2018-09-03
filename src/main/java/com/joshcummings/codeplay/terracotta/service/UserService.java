@@ -16,6 +16,8 @@
 package com.joshcummings.codeplay.terracotta.service;
 
 import com.joshcummings.codeplay.terracotta.model.User;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -72,15 +74,18 @@ public class UserService extends ServiceSupport {
 		return super.count("users");
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	public void updateUser(User user) {
 		runUpdate("UPDATE users SET name = '" + user.getName() + "', email = '" + user.getEmail() + "' "+
 					"WHERE id = '" + user.getId() + "'");
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	public void updateUserPassword(User user) {
 		runUpdate("UPDATE users SET password = '" + user.getPassword() + "' WHERE id = '" + user.getId() + "'");
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	public void removeUser(String username) {
 		runUpdate("DELETE FROM users WHERE username = '" + username + "'");
 	}
