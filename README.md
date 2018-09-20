@@ -1,5 +1,7 @@
 # Terracotta Bank
 
+![Terracotta Logo](https://github.com/jzheaux/terracotta-bank-spring/blob/master/terracotta.png "Thanks to https://logomakr.com for the donation!")
+
 A darned-vulnerable Spring-based Java web application - For educating on and practicing secure Java coding techniques
 
 The project is set up to align with corresponding courses on Pluralsight.
